@@ -1,0 +1,153 @@
+:root {
+  --c-black: #000000;
+  --c-white: #ffffff;
+
+  --bg: #08080a;
+  --bg-2: #0b0b0e;
+  --bg-3: #101013;
+  --surface: #141418;
+  --surface-2: #1b1b20;
+  --surface-3: #24242b;
+  --surface-hover: #2c2c34;
+
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --line-bright: rgba(255, 255, 255, 0.28);
+  --hairline: rgba(255, 255, 255, 0.05);
+
+  --text: #f4f4f6;
+  --text-muted: #a2a2ac;
+  --text-dim: #66666f;
+  --text-faint: #3a3a42;
+
+  --ink: var(--c-white);
+  --ink-inverse: var(--c-black);
+
+  --ok: #ffffff;
+  --ok-soft: rgba(255, 255, 255, 0.1);
+  --ok-line: rgba(255, 255, 255, 0.55);
+  --bad: #8a8a93;
+  --bad-soft: rgba(138, 138, 147, 0.12);
+  --bad-line: rgba(138, 138, 147, 0.5);
+  --xp: #ffffff;
+  --streak: #ffffff;
+
+  --grid-line: rgba(255, 255, 255, 0.04);
+  --glow-white: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 8px 40px -8px rgba(255, 255, 255, 0.22);
+
+  --r-xs: 4px;
+  --r-sm: 7px;
+  --r-md: 11px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-full: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 16px 40px -16px rgba(0, 0, 0, 0.85);
+  --shadow-lg: 0 32px 70px -24px rgba(0, 0, 0, 0.95);
+  --shadow-3d:
+    0 2px 0 rgba(255, 255, 255, 0.05) inset, 0 -1px 0 rgba(0, 0, 0, 0.6) inset,
+    0 24px 48px -20px rgba(0, 0, 0, 0.9);
+
+  --font-sans:
+    'Inter Variable', 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --font-display: var(--font-mono);
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 130ms;
+  --dur: 240ms;
+  --dur-slow: 460ms;
+
+  --header-h: 66px;
+  --content-max: 1220px;
+
+  --brand-300: var(--text);
+  --brand-400: var(--text);
+  --brand-500: var(--ink);
+  --brand-600: #d4d4d8;
+  --brand-700: #a1a1aa;
+  --brand-glow: var(--line-strong);
+  --accent-cyan: var(--text);
+  --accent-pink: var(--text);
+  --accent-violet: var(--text-muted);
+  --grad-brand: linear-gradient(135deg, var(--text), var(--text-dim));
+  --grad-cyan: linear-gradient(135deg, var(--text), var(--text-dim));
+  --grad-xp: linear-gradient(90deg, #ffffff, #a1a1aa);
+  --grad-success: linear-gradient(135deg, #ffffff, #a1a1aa);
+  --glow-brand: var(--glow-white);
+  --glow-cyan: var(--glow-white);
+  --glow-soft: var(--glow-white);
+  --success: var(--ok);
+  --success-soft: var(--ok-soft);
+  --success-border: var(--ok-line);
+  --danger: var(--bad);
+  --danger-soft: var(--bad-soft);
+  --danger-border: var(--bad-line);
+  --warning: var(--text-muted);
+  --warning-soft: var(--surface-3);
+  --info: var(--text);
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+  --glass-bg: color-mix(in srgb, var(--surface) 82%, transparent);
+  --glass-border: var(--line);
+  --glass-blur: 14px;
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f4f4f5;
+  --bg-2: #ededee;
+  --bg-3: #e6e6e8;
+  --surface: #ffffff;
+  --surface-2: #f6f6f7;
+  --surface-3: #ececee;
+  --surface-hover: #e4e4e7;
+
+  --line: rgba(0, 0, 0, 0.1);
+  --line-strong: rgba(0, 0, 0, 0.18);
+  --line-bright: rgba(0, 0, 0, 0.32);
+  --hairline: rgba(0, 0, 0, 0.06);
+
+  --text: #0a0a0b;
+  --text-muted: #52525b;
+  --text-dim: #8a8a93;
+  --text-faint: #c4c4cc;
+
+  --ink: var(--c-black);
+  --ink-inverse: var(--c-white);
+
+  --ok: #0a0a0b;
+  --ok-soft: rgba(0, 0, 0, 0.06);
+  --ok-line: rgba(0, 0, 0, 0.5);
+  --bad: #6b6b73;
+  --bad-soft: rgba(107, 107, 115, 0.1);
+  --bad-line: rgba(107, 107, 115, 0.45);
+
+  --grid-line: rgba(0, 0, 0, 0.05);
+  --glow-white: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 16px 40px -18px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 32px 70px -26px rgba(0, 0, 0, 0.32);
+  --shadow-3d:
+    0 2px 0 rgba(255, 255, 255, 0.8) inset, 0 -1px 0 rgba(0, 0, 0, 0.08) inset,
+    0 24px 48px -22px rgba(0, 0, 0, 0.25);
+
+  color-scheme: light;
+}
