@@ -147,6 +147,15 @@ export const m8Databases: Module = {
           explanation: 'JOIN объединяет строки таблиц по совпадению ключей.',
         },
         {
+          kind: 'blank',
+          title: 'Свяжи таблицы',
+          prompt: 'Впиши ключевые слова соединения таблиц по ключу.',
+          lang: 'sql',
+          template: 'SELECT users.name, orders.item\nFROM orders\n___ users ___ orders.userId = users.id;',
+          blanks: [{ answer: 'JOIN' }, { answer: 'ON' }],
+          hints: ['Соединение — JOIN, условие соединения — ON.'],
+        },
+        {
           kind: 'code',
           title: 'Соедини заказы с именами',
           lang: 'js',
@@ -222,6 +231,15 @@ export const m8Databases: Module = {
           ],
           answer: 1,
           explanation: 'COUNT(*) возвращает число строк в каждой группе.',
+        },
+        {
+          kind: 'blank',
+          title: 'Сгруппируй строки',
+          prompt: 'Впиши два слова, которые собирают строки в группы по статусу.',
+          lang: 'sql',
+          template: 'SELECT status, COUNT(*) AS n\nFROM tasks\n___ ___ status;',
+          blanks: [{ answer: 'GROUP' }, { answer: 'BY' }],
+          hints: ['Группировка — GROUP BY.'],
         },
         {
           kind: 'code',

@@ -92,6 +92,15 @@ export const m5Async: Module = {
           explanation: 'Три: pending (ожидание), fulfilled (выполнен), rejected (отклонён).',
         },
         {
+          kind: 'blank',
+          title: 'Получи значение промиса',
+          prompt: 'Впиши метод, который вызовет колбэк, когда промис выполнится.',
+          lang: 'js',
+          template: 'Promise.resolve(42).___((value) => {\n  console.log(value)\n})',
+          blanks: [{ answer: 'then' }],
+          hints: ['Метод подписки на результат — then.'],
+        },
+        {
           kind: 'code',
           title: 'Верни промис',
           lang: 'js',
@@ -198,6 +207,15 @@ export const m5Async: Module = {
           options: ['1', '[1, 2]', '2', 'Promise'],
           answer: 1,
           explanation: 'Массив результатов всех промисов в исходном порядке.',
+        },
+        {
+          kind: 'blank',
+          title: 'Дождись всех',
+          prompt: 'Впиши недостающее: ждём оба промиса параллельно.',
+          lang: 'js',
+          template: 'const [user, orders] = ___ Promise.___([\n  getUser(7),\n  getOrders(7),\n])',
+          blanks: [{ answer: 'await' }, { answer: 'all' }],
+          hints: ['Ожидание — await, параллельность — Promise.all.'],
         },
         {
           kind: 'code',

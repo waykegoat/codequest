@@ -125,6 +125,15 @@ export const m0bCss: Module = {
           ],
         },
         {
+          kind: 'blank',
+          title: 'Задай размер',
+          prompt: 'Впиши свойство размера шрифта и единицу измерения.',
+          lang: 'css',
+          template: 'p {\n  font-___: 24___;\n}',
+          blanks: [{ answer: 'size' }, { answer: 'px' }],
+          hints: ['font-size, размер в пикселях — px.'],
+        },
+        {
           kind: 'markup',
           title: 'Увеличь абзац',
           prompt: 'Сделай текст абзаца размером **28px** и **зелёным** (`green`).',
@@ -166,6 +175,15 @@ export const m0bCss: Module = {
               md: '`border-radius` скругляет углы. Цвет можно задавать словом (`red`) или HEX-кодом (`#7c5cff`).',
             },
           ],
+        },
+        {
+          kind: 'blank',
+          title: 'Класс и селектор',
+          prompt: 'Впиши атрибут класса в HTML и селектор этого класса в CSS.',
+          lang: 'html',
+          template: '<div ___="card">Карточка</div>\n\n<style>\n___ {\n  border-radius: 16px;\n}\n</style>',
+          blanks: [{ answer: 'class' }, { answer: '.card' }],
+          hints: ['Атрибут называется class.', 'В CSS класс выбирают через точку: .card'],
         },
         {
           kind: 'markup',

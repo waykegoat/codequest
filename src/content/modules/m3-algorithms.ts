@@ -112,6 +112,21 @@ export const m3Algorithms: Module = {
           explanation: '12 = 5·2 + 2, остаток равен 2.',
         },
         {
+          kind: 'order',
+          title: 'Собери FizzBuzz',
+          prompt: 'Расставь проверки в правильном порядке — от самой строгой к самой слабой.',
+          lang: 'js',
+          lines: [
+            'function fizzbuzz(n) {',
+            "  if (n % 15 === 0) return 'FizzBuzz'",
+            "  if (n % 3 === 0) return 'Fizz'",
+            "  if (n % 5 === 0) return 'Buzz'",
+            '  return n',
+            '}',
+          ],
+          hints: ['«Делится на оба» проверяем первым, иначе до него не дойдёт.'],
+        },
+        {
           kind: 'code',
           title: 'Реши FizzBuzz',
           lang: 'js',
@@ -168,6 +183,15 @@ export const m3Algorithms: Module = {
           options: ["'edoc'", "'code'", "['c','o','d','e']", "'code'"],
           answer: 0,
           explanation: 'Разбили на символы, развернули и склеили обратно — получилось «edoc».',
+        },
+        {
+          kind: 'blank',
+          title: 'Цепочка разворота',
+          prompt: 'Впиши три метода, которые разворачивают строку.',
+          lang: 'js',
+          template: "const reversed = s.___('')\n  .___()\n  .___('')",
+          blanks: [{ answer: 'split' }, { answer: 'reverse' }, { answer: 'join' }],
+          hints: ['Разбить → развернуть → склеить.'],
         },
         {
           kind: 'code',

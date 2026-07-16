@@ -185,6 +185,15 @@ export const m0Html: Module = {
           ],
         },
         {
+          kind: 'blank',
+          title: 'Дострой ссылку',
+          prompt: 'Впиши имя тега и имя атрибута с адресом.',
+          lang: 'html',
+          template: '<___ ___="https://ya.ru">Поиск</a>',
+          blanks: [{ answer: 'a' }, { answer: 'href' }],
+          hints: ['Тег ссылки — a.', 'Адрес хранит атрибут href.'],
+        },
+        {
           kind: 'markup',
           title: 'Сделай ссылку',
           prompt:

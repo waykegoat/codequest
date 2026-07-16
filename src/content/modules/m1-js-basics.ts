@@ -545,6 +545,15 @@ export const m1JsBasics: Module = {
             'function double(n) {\n  return n * 2\n}\nconsole.log(double(5))\nconsole.log(double(8))',
         },
         {
+          kind: 'blank',
+          title: 'Дострой функцию',
+          prompt: 'Впиши недостающие слова: функция должна принимать имя и возвращать приветствие.',
+          lang: 'js',
+          template: '___ hello(name) {\n  ___ `Привет, ${name}!`\n}',
+          blanks: [{ answer: 'function' }, { answer: 'return' }],
+          hints: ['Объявление начинается со слова function.', 'Результат отдаёт return.'],
+        },
+        {
           kind: 'code',
           title: 'Первая своя функция',
           lang: 'js',
@@ -649,6 +658,15 @@ export const m1JsBasics: Module = {
             '}',
           ],
           hints: ['Объявление → аккумулятор → цикл → возврат → скобка.'],
+        },
+        {
+          kind: 'blank',
+          title: 'Индекс последнего',
+          prompt: 'Массив из 3 элементов имеет индексы 0, 1, 2. Впиши свойство, чтобы получить последний элемент любого массива.',
+          lang: 'js',
+          template: 'const arr = [10, 20, 30]\nconst last = arr[arr.___ - 1]\nconsole.log(last)',
+          blanks: [{ answer: 'length' }],
+          hints: ['Длина массива минус один — индекс последнего элемента.'],
         },
         {
           kind: 'code',
@@ -900,6 +918,15 @@ export const m1JsBasics: Module = {
           options: ['ничего', 'блок catch', 'программа падает', 'блок try повторяется'],
           answer: 1,
           explanation: 'Управление переходит в `catch`, где можно обработать ошибку.',
+        },
+        {
+          kind: 'blank',
+          title: 'Каркас try/catch',
+          prompt: 'Впиши ключевые слова: рискованный код — в первый блок, обработка ошибки — во второй.',
+          lang: 'js',
+          template: '___ {\n  console.log(data.length)\n} ___ (err) {\n  console.log(0)\n}',
+          blanks: [{ answer: 'try' }, { answer: 'catch' }],
+          hints: ['Сначала try, потом catch.'],
         },
         {
           kind: 'code',

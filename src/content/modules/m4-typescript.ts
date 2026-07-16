@@ -41,6 +41,15 @@ export const m4TypeScript: Module = {
           answer: 1,
           explanation: 'Главное преимущество — статические типы, которые ловят ошибки заранее.',
         },
+        {
+          kind: 'blank',
+          title: 'Первые аннотации',
+          prompt: 'Впиши типы: возраст — число, имя — строка.',
+          lang: 'ts',
+          template: "let age: ___ = 25\nlet name: ___ = 'Аня'",
+          blanks: [{ answer: 'number' }, { answer: 'string' }],
+          hints: ['Типы пишутся с маленькой буквы: number, string.'],
+        },
       ],
     },
     {

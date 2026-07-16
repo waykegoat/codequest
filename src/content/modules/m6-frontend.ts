@@ -47,6 +47,19 @@ export const m6Frontend: Module = {
           explanation:
             'Компонент инкапсулирует разметку, логику и состояние в переиспользуемый блок.',
         },
+        {
+          kind: 'order',
+          title: 'Собери компонент',
+          prompt: 'Расставь строки упрощённого Vue-компонента счётчика.',
+          lang: 'js',
+          lines: [
+            'const Counter = {',
+            '  data: () => ({ count: 0 }),',
+            '  template: `<button @click="count++">{{ count }}</button>`,',
+            '}',
+          ],
+          hints: ['Сначала состояние (data), потом разметка (template).'],
+        },
       ],
     },
     {

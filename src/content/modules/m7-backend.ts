@@ -88,6 +88,15 @@ export const m7Backend: Module = {
           explanation: 'Маршрут — это комбинация HTTP-метода и пути.',
         },
         {
+          kind: 'blank',
+          title: 'Ключ маршрута',
+          prompt: 'Впиши переменные: ключ таблицы маршрутов — это метод и путь через пробел.',
+          lang: 'js',
+          template: 'const key = `${___} ${___}`\nconst handler = table[key]',
+          blanks: [{ answer: 'method' }, { answer: 'path' }],
+          hints: ['Сначала метод, потом путь: "GET /users".'],
+        },
+        {
           kind: 'code',
           title: 'Мини-роутер',
           lang: 'js',
@@ -148,6 +157,19 @@ export const m7Backend: Module = {
           ],
           answer: 1,
           explanation: 'Цепочка middleware отрабатывает строго по порядку подключения.',
+        },
+        {
+          kind: 'order',
+          title: 'Выстрой конвейер',
+          prompt: 'Расставь middleware в осмысленном порядке: сначала лог, потом доступ, потом разбор тела, и только затем маршруты.',
+          lang: 'js',
+          lines: [
+            'app.use(logger)',
+            'app.use(authorize)',
+            'app.use(parseBody)',
+            'app.get("/tasks", listTasks)',
+          ],
+          hints: ['Проверка доступа — до разбора тела и обработчиков.'],
         },
         {
           kind: 'code',

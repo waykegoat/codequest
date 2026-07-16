@@ -150,6 +150,15 @@ export const m9Interview: Module = {
           ],
         },
         {
+          kind: 'blank',
+          title: 'Сердце алгоритма',
+          prompt: 'Впиши недостающее: ищем недостающее число в словаре seen, иначе запоминаем текущее.',
+          lang: 'js',
+          template: 'const need = ___ - nums[i]\nif (need in ___) return [seen[need], i]\nseen[nums[i]] = ___',
+          blanks: [{ answer: 'target' }, { answer: 'seen' }, { answer: 'i' }],
+          hints: ['Недостающее = цель минус текущее.', 'В словаре храним индекс числа.'],
+        },
+        {
           kind: 'code',
           title: 'Реши Two Sum',
           lang: 'js',

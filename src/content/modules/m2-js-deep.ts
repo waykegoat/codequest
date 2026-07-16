@@ -43,6 +43,15 @@ export const m2JsDeep: Module = {
           explanation: 'Стрелочная функция неявно возвращает a + b = 7.',
         },
         {
+          kind: 'blank',
+          title: 'Преврати в стрелку',
+          prompt: 'Впиши символы стрелки, чтобы записать функцию коротко.',
+          lang: 'js',
+          template: 'const double = (x) ___ x * 2\nconst greet = (name) ___ `Привет, ${name}`',
+          blanks: [{ answer: '=>' }, { answer: '=>' }],
+          hints: ['Стрелка — это =>.'],
+        },
+        {
           kind: 'code',
           title: 'Стрелка с неявным возвратом',
           lang: 'js',
@@ -99,6 +108,15 @@ export const m2JsDeep: Module = {
           explanation: 'Остаются только элементы больше 2: 3 и 4.',
         },
         {
+          kind: 'blank',
+          title: 'map или filter?',
+          prompt: 'Первая строка преобразует каждый элемент, вторая — отбирает подходящие. Впиши методы.',
+          lang: 'js',
+          template: 'const doubled = nums.___((n) => n * 2)\nconst even = nums.___((n) => n % 2 === 0)',
+          blanks: [{ answer: 'map' }, { answer: 'filter' }],
+          hints: ['Преобразование — map, отбор — filter.'],
+        },
+        {
           kind: 'code',
           title: 'Удвой каждый',
           lang: 'js',
@@ -153,6 +171,21 @@ export const m2JsDeep: Module = {
           ],
           answer: 1,
           explanation: 'Это стартовое значение аккумулятора — здесь сумма начнётся с 10.',
+        },
+        {
+          kind: 'order',
+          title: 'Собери reduce',
+          prompt: 'Расставь строки: функция складывает все числа массива через reduce.',
+          lang: 'js',
+          lines: [
+            'function total(arr) {',
+            '  return arr.reduce(',
+            '    (acc, n) => acc + n,',
+            '    0,',
+            '  )',
+            '}',
+          ],
+          hints: ['Сначала колбэк-сумматор, затем начальное значение 0.'],
         },
         {
           kind: 'code',
