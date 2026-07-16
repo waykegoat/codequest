@@ -36,6 +36,15 @@ export const m8Databases: Module = {
           answer: 1,
           explanation: '`SELECT` — основная команда для выборки данных.',
         },
+        {
+          kind: 'blank',
+          title: 'Собери запрос',
+          prompt: 'Впиши ключевые слова: выбрать имена совершеннолетних пользователей.',
+          lang: 'sql',
+          template: 'SELECT name\n___ users\n___ age >= 18;',
+          blanks: [{ answer: 'FROM' }, { answer: 'WHERE' }],
+          hints: ['Источник данных — FROM.', 'Условие — WHERE.'],
+        },
       ],
     },
     {
@@ -233,6 +242,158 @@ export const m8Databases: Module = {
           hints: ['Заведи пустой объект-аккумулятор.', 'acc[r.status] = (acc[r.status] || 0) + 1'],
           solution:
             'function countByStatus(rows) {\n  return rows.reduce((acc, r) => {\n    acc[r.status] = (acc[r.status] || 0) + 1\n    return acc\n  }, {})\n}',
+        },
+      ],
+    },
+    {
+      id: 'l5-crud',
+      title: 'INSERT, UPDATE, DELETE',
+      subtitle: 'Меняем данные',
+      xp: 60,
+      icon: '✍️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Три команды изменений',
+          blocks: [
+            {
+              type: 'text',
+              md: '- `INSERT INTO` — добавить строку\n- `UPDATE ... SET` — изменить строки\n- `DELETE FROM` — удалить строки\n\nУ `UPDATE` и `DELETE` почти всегда должен быть `WHERE`.',
+            },
+            {
+              type: 'code',
+              lang: 'sql',
+              code: "INSERT INTO users (name, age) VALUES ('Аня', 20);\nUPDATE users SET age = 21 WHERE id = 7;\nDELETE FROM users WHERE id = 7;",
+            },
+            {
+              type: 'callout',
+              tone: 'warning',
+              md: '`UPDATE users SET age = 21` **без WHERE** изменит ВСЕ строки таблицы. Легендарная ошибка, роняющая продакшены.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Что сделает `DELETE FROM users` без WHERE?',
+          options: [
+            'удалит одну строку',
+            'удалит все строки таблицы',
+            'удалит таблицу целиком',
+            'ничего, это ошибка синтаксиса',
+          ],
+          answer: 1,
+          explanation: 'Без условия команда применяется ко всем строкам. Таблица останется, но пустая.',
+        },
+        {
+          kind: 'blank',
+          title: 'Дополни команды',
+          prompt: 'Впиши ключевые слова: добавить пользователя и поднять ему возраст.',
+          lang: 'sql',
+          template: "INSERT ___ users (name) VALUES ('Ким');\nUPDATE users ___ age = 16 ___ name = 'Ким';",
+          blanks: [{ answer: 'INTO' }, { answer: 'SET' }, { answer: 'WHERE' }],
+          hints: ['INSERT INTO таблица ...', 'UPDATE таблица SET поле = значение WHERE условие.'],
+        },
+        {
+          kind: 'code',
+          title: 'UPDATE на JavaScript',
+          lang: 'js',
+          prompt:
+            'Смоделируем UPDATE. Напиши функцию `updateRow(rows, id, fields)`: верни НОВЫЙ массив, где строка с данным `id` объединена с полями `fields` (spread), остальные не тронуты.',
+          entry: 'updateRow',
+          starter: 'function updateRow(rows, id, fields) {\n  \n}',
+          mustUse: ['...'],
+          tests: [
+            {
+              name: 'обновляем age у id=1',
+              args: [[{ id: 1, name: 'Аня', age: 20 }], 1, { age: 21 }],
+              expected: [{ id: 1, name: 'Аня', age: 21 }],
+            },
+            {
+              name: 'чужие строки не трогаем',
+              args: [
+                [
+                  { id: 1, name: 'Аня' },
+                  { id: 2, name: 'Ким' },
+                ],
+                2,
+                { name: 'Лео' },
+              ],
+              expected: [
+                { id: 1, name: 'Аня' },
+                { id: 2, name: 'Лео' },
+              ],
+            },
+          ],
+          hints: ['rows.map((r) => (r.id === id ? { ...r, ...fields } : r))'],
+          solution:
+            'function updateRow(rows, id, fields) {\n  return rows.map((r) => (r.id === id ? { ...r, ...fields } : r))\n}',
+        },
+      ],
+    },
+    {
+      id: 'l6-schema',
+      title: 'Проектирование схемы',
+      subtitle: 'Ключи и связи',
+      xp: 65,
+      icon: '🏛️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Как связывают таблицы',
+          blocks: [
+            {
+              type: 'text',
+              md: '- **Первичный ключ** (PRIMARY KEY) — уникальный id строки\n- **Внешний ключ** (FOREIGN KEY) — ссылка на строку другой таблицы\n\nСвязь «один ко многим»: у пользователя много заказов → в `orders` хранится `user_id`.',
+            },
+            {
+              type: 'code',
+              lang: 'sql',
+              code: 'CREATE TABLE orders (\n  id INTEGER PRIMARY KEY,\n  item TEXT NOT NULL,\n  user_id INTEGER REFERENCES users(id)\n);',
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Вопрос с собеседования: где хранить связь? Всегда на стороне «многих»: у заказа один владелец — user_id живёт в orders.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'У поста в блоге много комментариев. Где хранить связь?',
+          options: [
+            'в таблице posts — массив comment_ids',
+            'в таблице comments — поле post_id',
+            'в отдельном файле',
+            'связь не нужна',
+          ],
+          answer: 1,
+          explanation: 'Сторона «многих» (comments) хранит внешний ключ на «одного» (post_id).',
+        },
+        {
+          kind: 'order',
+          title: 'Собери CREATE TABLE',
+          prompt: 'Расставь строки объявления таблицы комментариев.',
+          lang: 'sql',
+          lines: [
+            'CREATE TABLE comments (',
+            '  id INTEGER PRIMARY KEY,',
+            '  text TEXT NOT NULL,',
+            '  post_id INTEGER REFERENCES posts(id)',
+            ');',
+          ],
+          hints: ['Сначала имя таблицы, потом первичный ключ, поля, внешний ключ, закрывающая скобка.'],
+        },
+        {
+          kind: 'quiz',
+          question: 'Зачем таблице PRIMARY KEY?',
+          options: [
+            'для красоты',
+            'уникально идентифицировать каждую строку',
+            'ускорять все запросы в 100 раз',
+            'шифровать данные',
+          ],
+          answer: 1,
+          explanation: 'Первичный ключ гарантирует уникальность и позволяет ссылаться на строку.',
         },
       ],
     },

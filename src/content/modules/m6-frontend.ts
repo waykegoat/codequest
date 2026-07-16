@@ -170,5 +170,176 @@ export const m6Frontend: Module = {
         },
       ],
     },
+    {
+      id: 'l4-events',
+      title: 'События и формы',
+      subtitle: 'Реакция на пользователя',
+      xp: 55,
+      icon: '🖱️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Интерфейс слушает',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Пользователь кликает, печатает, отправляет формы — это **события**. Компонент вешает обработчики (`@click` во Vue, `onClick` в React) и реагирует. Перед отправкой формы данные **валидируют**.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "const errors = []\nif (!form.email.includes('@')) {\n  errors.push('Некорректный email')\n}\nif (form.password.length < 8) {\n  errors.push('Пароль короче 8 символов')\n}",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Валидируй на фронте для удобства пользователя и ОБЯЗАТЕЛЬНО дублируй на сервере: фронт легко обойти.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Почему валидации только на фронтенде недостаточно?',
+          options: [
+            'фронтенд медленный',
+            'запрос к API можно отправить в обход интерфейса',
+            'браузеры не умеют валидировать',
+            'достаточно, сервер можно не проверять',
+          ],
+          answer: 1,
+          explanation: 'Любой может дернуть API напрямую (curl, Postman) — сервер обязан проверять сам.',
+        },
+        {
+          kind: 'code',
+          title: 'Валидатор формы',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `validate(form)` для формы `{ email, password }`. Верни массив ошибок: `"email"` — если в email нет символа `@`, `"password"` — если пароль короче 8 символов. Если всё хорошо — пустой массив.',
+          entry: 'validate',
+          starter: 'function validate(form) {\n  \n}',
+          tests: [
+            {
+              name: 'всё валидно → []',
+              args: [{ email: 'a@b.ru', password: 'longenough' }],
+              expected: [],
+            },
+            {
+              name: 'плохой email',
+              args: [{ email: 'нет-собаки', password: 'longenough' }],
+              expected: ['email'],
+            },
+            {
+              name: 'обе ошибки',
+              args: [{ email: 'x', password: '123' }],
+              expected: ['email', 'password'],
+            },
+          ],
+          hints: [
+            'Копилка ошибок: const errors = []',
+            "if (!form.email.includes('@')) errors.push('email')",
+          ],
+          solution:
+            "function validate(form) {\n  const errors = []\n  if (!form.email.includes('@')) errors.push('email')\n  if (form.password.length < 8) errors.push('password')\n  return errors\n}",
+        },
+      ],
+    },
+    {
+      id: 'l5-todo-logic',
+      title: 'Логика TODO-приложения',
+      subtitle: 'Состояние без мутаций',
+      xp: 60,
+      icon: '✅',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Новое состояние вместо правки старого',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Классика собеседований по фронтенду — логика списка задач. Правило то же: не мутируй массив состояния, а **возвращай новый** — spread и map в помощь.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'const added = [...todos, newTodo]\nconst toggled = todos.map((t) =>\n  t.id === id ? { ...t, done: !t.done } : t,\n)',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Почему `todos.push(newTodo)` — плохой способ обновить состояние?',
+          options: [
+            'push медленный',
+            'мутация старого массива: фреймворк может не заметить изменение',
+            'push не добавляет элементы',
+            'нормальный способ',
+          ],
+          answer: 1,
+          explanation: 'Реактивность строится на сравнении ссылок: новое состояние — новый массив.',
+        },
+        {
+          kind: 'code',
+          title: 'Добавь задачу',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `addTodo(todos, title)`, возвращающую НОВЫЙ массив с добавленной задачей `{ id, title, done: false }`, где `id` — длина массива плюс 1. Исходный массив не меняй.',
+          entry: 'addTodo',
+          starter: 'function addTodo(todos, title) {\n  \n}',
+          mustUse: ['...'],
+          tests: [
+            {
+              name: 'в пустой список',
+              args: [[], 'первая'],
+              expected: [{ id: 1, title: 'первая', done: false }],
+            },
+            {
+              name: 'в непустой список',
+              args: [[{ id: 1, title: 'a', done: true }], 'b'],
+              expected: [
+                { id: 1, title: 'a', done: true },
+                { id: 2, title: 'b', done: false },
+              ],
+            },
+          ],
+          hints: ['return [...todos, { id: todos.length + 1, title, done: false }]'],
+          solution:
+            'function addTodo(todos, title) {\n  return [...todos, { id: todos.length + 1, title, done: false }]\n}',
+        },
+        {
+          kind: 'code',
+          title: 'Переключи задачу',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `toggleTodo(todos, id)`, возвращающую новый массив, где у задачи с данным `id` поле `done` инвертировано, остальные — без изменений.',
+          entry: 'toggleTodo',
+          starter: 'function toggleTodo(todos, id) {\n  \n}',
+          mustUse: ['map'],
+          tests: [
+            {
+              name: 'переключаем id=1',
+              args: [[{ id: 1, title: 'a', done: false }], 1],
+              expected: [{ id: 1, title: 'a', done: true }],
+            },
+            {
+              name: 'остальные не трогаем',
+              args: [
+                [
+                  { id: 1, title: 'a', done: false },
+                  { id: 2, title: 'b', done: false },
+                ],
+                2,
+              ],
+              expected: [
+                { id: 1, title: 'a', done: false },
+                { id: 2, title: 'b', done: true },
+              ],
+            },
+          ],
+          hints: ['todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t))'],
+          solution:
+            'function toggleTodo(todos, id) {\n  return todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t))\n}',
+        },
+      ],
+    },
   ],
 }

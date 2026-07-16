@@ -229,6 +229,66 @@ export const m9Interview: Module = {
       ],
     },
     {
+      id: 'l4b-web',
+      title: 'Веб на собеседовании',
+      subtitle: 'HTTP, хранение, CORS',
+      xp: 55,
+      icon: '🕸️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Вопросы «про веб вообще»',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Кроме JS, джуна спрашивают про устройство веба:\n\n- Что происходит после ввода URL (DNS → запрос → HTML → рендер)\n- `cookie` vs `localStorage`: cookie летят на сервер с каждым запросом, localStorage живёт только в браузере\n- **CORS**: браузер блокирует запросы к чужому домену, пока сервер явно не разрешит их заголовками',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "localStorage.setItem('theme', 'dark')\nlocalStorage.getItem('theme')  // 'dark'\ndocument.cookie                // 'session=abc'",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Отвечай структурно: «есть два механизма, разница в X, использую Y, потому что Z». Это ценят больше заученных определений.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Чем cookie отличается от localStorage?',
+          options: [
+            'ничем',
+            'cookie автоматически отправляются на сервер с каждым запросом',
+            'localStorage быстрее в 10 раз',
+            'cookie может хранить больше данных',
+          ],
+          answer: 1,
+          explanation: 'Cookie участвуют в HTTP-запросах (потому там сессии), localStorage — чисто клиентское хранилище.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Браузер заблокировал запрос фронтенда к API на другом домене. Это...',
+          options: ['DDoS-защита', 'CORS-политика', 'ошибка 500', 'проблема DNS'],
+          answer: 1,
+          explanation: 'Cross-Origin Resource Sharing: сервер должен разрешить чужой origin заголовком Access-Control-Allow-Origin.',
+        },
+        {
+          kind: 'quiz',
+          question: 'GET-запрос должен...',
+          options: [
+            'изменять данные на сервере',
+            'только читать данные, без побочных эффектов',
+            'всегда требовать тело запроса',
+            'использоваться для логина',
+          ],
+          answer: 1,
+          explanation: 'GET — безопасный и идемпотентный: только чтение. Изменения — POST/PUT/DELETE.',
+        },
+      ],
+    },
+    {
       id: 'l5-offer',
       title: 'Собеседование и оффер',
       subtitle: 'Soft skills и резюме',

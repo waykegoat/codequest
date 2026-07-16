@@ -42,6 +42,15 @@ export const m7Backend: Module = {
           explanation:
             'Это маршрут (route): при GET-запросе на /hello выполнится колбэк-обработчик.',
         },
+        {
+          kind: 'blank',
+          title: 'Дострой сервер',
+          prompt: 'Впиши метод маршрута и команду запуска сервера на порту 3000.',
+          lang: 'js',
+          template: 'app.___("/ping", (req, res) => {\n  res.json({ ok: true })\n})\n\napp.___(3000)',
+          blanks: [{ answer: 'get' }, { answer: 'listen' }],
+          hints: ['GET-маршрут: app.get.', 'Запуск: app.listen(порт).'],
+        },
       ],
     },
     {
@@ -216,6 +225,128 @@ export const m7Backend: Module = {
           hints: ['Используй switch или объект-словарь кодов.'],
           solution:
             'function statusText(code) {\n  const map = { 200: "OK", 404: "Not Found", 500: "Server Error" }\n  return map[code] || "Unknown"\n}',
+        },
+      ],
+    },
+    {
+      id: 'l5-params',
+      title: 'Параметры запроса',
+      subtitle: 'params и query',
+      xp: 60,
+      icon: '🎛️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Данные приходят в URL',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Сервер достаёт данные из адреса двумя путями:\n\n- **params** — часть пути: `/users/:id` → `req.params.id`\n- **query** — после `?`: `/tasks?done=true&page=2` → `req.query.done`',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'app.get("/users/:id", (req, res) => {\n  const id = req.params.id\n  const full = req.query.full === "true"\n  res.json({ id, full })\n})',
+            },
+            {
+              type: 'callout',
+              tone: 'warning',
+              md: 'Всё, что пришло из URL — **строки**. Числа приводи сам: `Number(req.params.id)`.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Откуда сервер возьмёт `page` из запроса `GET /tasks?page=2`?',
+          options: ['req.params.page', 'req.query.page', 'req.body.page', 'req.page'],
+          answer: 1,
+          explanation: 'Всё после «?» — query-параметры: req.query.',
+        },
+        {
+          kind: 'code',
+          title: 'Разбери query-строку',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `parseQuery(qs)`, разбирающую строку вида `"?a=1&b=2"` в объект `{ a: "1", b: "2" }`. Для пустой строки или `"?"` верни `{}`. Значения оставляй строками.',
+          entry: 'parseQuery',
+          starter: 'function parseQuery(qs) {\n  \n}',
+          tests: [
+            { name: '?a=1&b=2 → {a:"1",b:"2"}', args: ['?a=1&b=2'], expected: { a: '1', b: '2' } },
+            { name: '?done=true → {done:"true"}', args: ['?done=true'], expected: { done: 'true' } },
+            { name: 'пустая строка → {}', args: [''], expected: {} },
+            { name: '"?" → {}', args: ['?'], expected: {} },
+          ],
+          hints: [
+            'Убери «?» через slice(1), проверь на пустоту.',
+            "Разбей по '&', каждую пару — по '='.",
+          ],
+          solution:
+            "function parseQuery(qs) {\n  const clean = qs.startsWith('?') ? qs.slice(1) : qs\n  if (!clean) return {}\n  const result = {}\n  for (const pair of clean.split('&')) {\n    const [key, value] = pair.split('=')\n    result[key] = value\n  }\n  return result\n}",
+        },
+      ],
+    },
+    {
+      id: 'l6-auth',
+      title: 'Авторизация',
+      subtitle: 'Токены и доступ',
+      xp: 65,
+      icon: '🔐',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Кто стучится в API',
+          blocks: [
+            {
+              type: 'text',
+              md: 'После логина сервер выдаёт **токен**. Клиент шлёт его в заголовке `Authorization: Bearer <токен>` с каждым запросом. Middleware проверяет токен до обработчика: нет токена — `401 Unauthorized`.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'function requireAuth(req, res, next) {\n  const header = req.headers.authorization\n  if (!header) return res.status(401).json({ error: "нет токена" })\n  next()\n}',
+            },
+            {
+              type: 'callout',
+              tone: 'info',
+              md: '401 — «кто ты?» (не авторизован), 403 — «тебя знаю, но нельзя» (нет прав). Их часто путают на собеседованиях.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Пользователь залогинен, но пытается удалить чужой пост. Какой код вернуть?',
+          options: ['401', '403', '404', '500'],
+          answer: 1,
+          explanation: '403 Forbidden: аутентификация пройдена, а прав на действие нет.',
+        },
+        {
+          kind: 'code',
+          title: 'Достань токен',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `extractToken(headers)`. В объекте заголовков может быть поле `authorization` вида `"Bearer abc123"`. Верни сам токен (`"abc123"`), а если заголовка нет или он не начинается с `"Bearer "` — верни `null`.',
+          entry: 'extractToken',
+          starter: 'function extractToken(headers) {\n  \n}',
+          tests: [
+            {
+              name: 'Bearer abc123 → abc123',
+              args: [{ authorization: 'Bearer abc123' }],
+              expected: 'abc123',
+            },
+            { name: 'нет заголовка → null', args: [{}], expected: null },
+            {
+              name: 'не Bearer → null',
+              args: [{ authorization: 'Basic xyz' }],
+              expected: null,
+            },
+          ],
+          hints: [
+            'const h = headers.authorization',
+            "if (!h || !h.startsWith('Bearer ')) return null",
+            "return h.slice('Bearer '.length)",
+          ],
+          solution:
+            "function extractToken(headers) {\n  const h = headers.authorization\n  if (!h || !h.startsWith('Bearer ')) return null\n  return h.slice('Bearer '.length)\n}",
         },
       ],
     },

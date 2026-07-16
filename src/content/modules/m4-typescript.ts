@@ -272,5 +272,67 @@ export const m4TypeScript: Module = {
         },
       ],
     },
+    {
+      id: 'l6-fn-types',
+      title: 'Типизация функций',
+      subtitle: 'Параметры и возврат',
+      xp: 55,
+      icon: '✒️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Контракт функции',
+          blocks: [
+            {
+              type: 'text',
+              md: 'У функции типизируют параметры и возвращаемое значение. `void` — «ничего не возвращает». Необязательный параметр помечают `?`.',
+            },
+            {
+              type: 'code',
+              lang: 'ts',
+              code: 'function area(w: number, h: number): number {\n  return w * h\n}\n\nfunction log(msg: string, tag?: string): void {\n  console.log(tag ? `[${tag}] ${msg}` : msg)\n}',
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Тип возврата TS чаще выводит сам, но у публичных функций его пишут явно — это документация и защита от случайных изменений.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Какой тип возврата у функции, которая только печатает в консоль?',
+          options: ['null', 'undefined', 'void', 'never'],
+          answer: 2,
+          explanation: '`void` означает «возвращаемое значение отсутствует и не используется».',
+        },
+        {
+          kind: 'blank',
+          title: 'Типизируй функцию',
+          prompt: 'Впиши типы: функция принимает ширину и высоту, возвращает число.',
+          lang: 'ts',
+          template: 'function area(w: ___, h: ___): ___ {\n  return w * h\n}',
+          blanks: [{ answer: 'number' }, { answer: 'number' }, { answer: 'number' }],
+          hints: ['Все три — number.'],
+        },
+        {
+          kind: 'code',
+          title: 'Сужение union-параметра',
+          lang: 'js',
+          prompt:
+            'В TS параметр мог бы иметь тип `number | string`. Напиши функцию `describeId(id)`: для числа верни `"num:ЧИСЛО"`, для строки — `"str:СТРОКА"`. Проверяй через `typeof`.',
+          entry: 'describeId',
+          starter: 'function describeId(id) {\n  \n}',
+          mustUse: ['typeof'],
+          tests: [
+            { name: 'describeId(42) → "num:42"', args: [42], expected: 'num:42' },
+            { name: 'describeId("abc") → "str:abc"', args: ['abc'], expected: 'str:abc' },
+          ],
+          hints: ["if (typeof id === 'number') return `num:${id}`"],
+          solution:
+            "function describeId(id) {\n  if (typeof id === 'number') return `num:${id}`\n  return `str:${id}`\n}",
+        },
+      ],
+    },
   ],
 }

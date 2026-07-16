@@ -8,6 +8,56 @@ export const m5Async: Module = {
   icon: '⏳',
   lessons: [
     {
+      id: 'l0-callbacks',
+      title: 'Почему асинхронность',
+      subtitle: 'Колбэки и очередь',
+      xp: 40,
+      icon: '⏰',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'JS не умеет ждать стоя',
+          blocks: [
+            {
+              type: 'text',
+              md: 'JavaScript выполняет код в **один поток**. Долгие операции (сеть, таймеры) нельзя ждать «стоя» — страница бы зависла. Вместо этого JS оставляет **колбэк** — функцию, которую вызовут, когда результат будет готов.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "console.log('старт')\nsetTimeout(() => {\n  console.log('через секунду')\n}, 1000)\nconsole.log('конец')\n// старт → конец → через секунду",
+            },
+            {
+              type: 'callout',
+              tone: 'info',
+              md: 'Отложенные колбэки ждут в **очереди** и выполняются, когда основной код закончился. Поэтому «конец» печатается раньше.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: "В каком порядке выведется: `log('a'); setTimeout(() => log('b'), 0); log('c')`?",
+          options: ['a, b, c', 'a, c, b', 'b, a, c', 'c, b, a'],
+          answer: 1,
+          explanation: 'Даже с задержкой 0 колбэк попадает в очередь и ждёт конца основного кода.',
+        },
+        {
+          kind: 'order',
+          title: 'Собери отложенный вывод',
+          prompt: 'Расставь строки: программа печатает «старт», через секунду — «позже», и сразу после старта — «конец».',
+          lang: 'js',
+          lines: [
+            "console.log('старт')",
+            'setTimeout(() => {',
+            "  console.log('позже')",
+            '}, 1000)',
+            "console.log('конец')",
+          ],
+          hints: ['setTimeout с колбэком стоит между двумя обычными выводами.'],
+        },
+      ],
+    },
+    {
       id: 'l1-promises',
       title: 'Промисы',
       subtitle: 'Обещание результата',
@@ -221,6 +271,76 @@ export const m5Async: Module = {
           hints: ['Оберни JSON.parse в try, в catch верни null.'],
           solution:
             'function safeJson(str) {\n  try {\n    return JSON.parse(str)\n  } catch (err) {\n    return null\n  }\n}',
+        },
+      ],
+    },
+    {
+      id: 'l5-practice',
+      title: 'Имитация API',
+      subtitle: 'Всё вместе',
+      xp: 65,
+      icon: '🌐',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Последовательно или параллельно',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Если второй запрос зависит от первого — жди их **последовательно**. Если запросы независимы — запускай **параллельно** через `Promise.all`: три запроса по 100 мс займут 100 мс, а не 300.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'const user = await getUser(7)\nconst orders = await getOrders(user.id)\n\nconst [a, b] = await Promise.all([getUser(1), getUser(2)])',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Три независимых запроса по 200 мс через Promise.all займут примерно...',
+          options: ['600 мс', '200 мс', '400 мс', '0 мс'],
+          answer: 1,
+          explanation: 'Параллельные запросы идут одновременно — время равно самому долгому из них.',
+        },
+        {
+          kind: 'code',
+          title: 'Загрузи всех пользователей',
+          lang: 'js',
+          prompt:
+            'Функция `getUser(id)` имитирует запрос к API. Напиши async-функцию `loadNames(ids)`: загрузи всех пользователей **параллельно** и верни массив их имён.',
+          entry: 'loadNames',
+          starter:
+            "async function getUser(id) {\n  return { id, name: 'user' + id }\n}\n\nasync function loadNames(ids) {\n  \n}",
+          mustUse: ['Promise.all'],
+          tests: [
+            { name: "loadNames([1,2]) → ['user1','user2']", args: [[1, 2]], expected: ['user1', 'user2'] },
+            { name: "loadNames([7]) → ['user7']", args: [[7]], expected: ['user7'] },
+            { name: 'loadNames([]) → []', args: [[]], expected: [] },
+          ],
+          hints: [
+            'const users = await Promise.all(ids.map((id) => getUser(id)))',
+            'return users.map((u) => u.name)',
+          ],
+          solution:
+            "async function getUser(id) {\n  return { id, name: 'user' + id }\n}\n\nasync function loadNames(ids) {\n  const users = await Promise.all(ids.map((id) => getUser(id)))\n  return users.map((u) => u.name)\n}",
+        },
+        {
+          kind: 'code',
+          title: 'Запрос с запасным вариантом',
+          lang: 'js',
+          prompt:
+            'Функция `getConfig(key)` бросает ошибку для неизвестных ключей. Напиши async-функцию `configOr(key, fallback)`: верни значение конфига, а при ошибке — `fallback`.',
+          entry: 'configOr',
+          starter:
+            "async function getConfig(key) {\n  const store = { theme: 'dark', lang: 'ru' }\n  if (!(key in store)) throw new Error('нет ключа')\n  return store[key]\n}\n\nasync function configOr(key, fallback) {\n  \n}",
+          tests: [
+            { name: "configOr('theme', 'light') → 'dark'", args: ['theme', 'light'], expected: 'dark' },
+            { name: "configOr('size', 16) → 16", args: ['size', 16], expected: 16 },
+          ],
+          hints: ['try { return await getConfig(key) } catch { return fallback }'],
+          solution:
+            "async function getConfig(key) {\n  const store = { theme: 'dark', lang: 'ru' }\n  if (!(key in store)) throw new Error('нет ключа')\n  return store[key]\n}\n\nasync function configOr(key, fallback) {\n  try {\n    return await getConfig(key)\n  } catch (err) {\n    return fallback\n  }\n}",
         },
       ],
     },
