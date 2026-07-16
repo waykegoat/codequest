@@ -9,9 +9,9 @@ export default {
     achievements: 'Achievements',
   },
   home: {
-    heroTitle: 'From junior to middle — like a game',
+    heroTitle: 'From zero to Junior+ — like a game',
     heroSubtitle:
-      'Clear levels, earn XP, keep your streak. Become a full-stack developer in 3 months.',
+      'Clear levels, earn XP, keep your streak. From absolute zero to a Junior+ full-stack developer.',
     continue: 'Continue learning',
     start: 'Start your journey',
     yourJourney: 'Your path',

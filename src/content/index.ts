@@ -16,8 +16,9 @@ const [restApi, tools, capstone] = roadmapModules
 
 export const course: Course = {
   id: 'fullstack-3m',
-  title: 'Фулл-стек: от нуля до первой работы',
-  description: 'Путь от полного новичка до Junior, который проходит собеседование и получает оффер.',
+  title: 'Фулл-стек: с нуля до Junior+',
+  description:
+    'Путь от полного новичка до уверенного Junior+: синтаксис, алгоритмы, фронтенд, бэкенд, базы данных и подготовка к офферу.',
   modules: [
     m0Html,
     m0bCss,

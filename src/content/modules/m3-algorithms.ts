@@ -480,5 +480,75 @@ export const m3Algorithms: Module = {
         },
       ],
     },
+    {
+      id: 'l7-bigo',
+      title: 'Сложность алгоритмов',
+      subtitle: 'Большое О',
+      xp: 75,
+      icon: '⏱️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Как быстро растёт время',
+          blocks: [
+            {
+              type: 'text',
+              md: '**Big O** описывает, как растёт время работы с ростом данных:\n\n- `O(1)` — константа: доступ по ключу объекта, `arr[5]`\n- `O(n)` — линейно: один проход по массиву\n- `O(n²)` — квадрат: вложенные циклы, «каждый с каждым»\n- `O(log n)` — логарифм: бинарный поиск, отбрасываем половину',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'for (const x of arr) {}          // O(n)\n\nfor (const a of arr) {\n  for (const b of arr) {}         // O(n²)\n}',
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Ты уже применял это: объект-счётчик превращает поиск пары из O(n²) в O(n) — вспомни задачу про частоты. Именно так решается Two Sum.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Какая сложность у одного прохода по массиву из n элементов?',
+          options: ['O(1)', 'O(n)', 'O(n²)', 'O(log n)'],
+          answer: 1,
+          explanation: 'Работа растёт линейно: вдвое больше данных — вдвое больше шагов.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Два вложенных цикла по одному массиву — это...',
+          options: ['O(n)', 'O(2n)', 'O(n²)', 'O(1)'],
+          answer: 2,
+          explanation: 'Для каждого из n элементов делаем ещё n шагов: n × n = n².',
+        },
+        {
+          kind: 'quiz',
+          question: 'Массив из 1000 отсортированных чисел. За сколько шагов бинарный поиск найдёт элемент?',
+          options: ['~1000', '~500', '~10', 'ровно 1'],
+          answer: 2,
+          explanation: 'Каждый шаг отбрасывает половину: 2¹⁰ = 1024, хватит ~10 шагов. Это O(log n).',
+        },
+        {
+          kind: 'code',
+          title: 'Есть ли дубликаты — за O(n)',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `hasDuplicates(arr)`, возвращающую `true`, если в массиве есть повторы. Решение за один проход: запоминай увиденное в объекте (или Set) — без вложенных циклов.',
+          entry: 'hasDuplicates',
+          starter: 'function hasDuplicates(arr) {\n  \n}',
+          tests: [
+            { name: '[1,2,3] → false', args: [[1, 2, 3]], expected: false },
+            { name: '[1,2,1] → true', args: [[1, 2, 1]], expected: true },
+            { name: '[] → false', args: [[]], expected: false },
+          ],
+          hints: [
+            'const seen = {}',
+            'if (x in seen) return true, иначе seen[x] = true',
+          ],
+          solution:
+            'function hasDuplicates(arr) {\n  const seen = {}\n  for (const x of arr) {\n    if (x in seen) return true\n    seen[x] = true\n  }\n  return false\n}',
+        },
+      ],
+    },
   ],
 }
