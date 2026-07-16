@@ -39,7 +39,7 @@ describe('HomeView', () => {
 
     expect(text).toContain('Основы JavaScript')
     expect(text).toContain('JavaScript: глубже')
-    expect(text).toContain('Привет, код!')
+    expect(text).toContain('Твоя первая программа')
 
     expect(wrapper.findAll('.node').length).toBeGreaterThanOrEqual(10)
   })

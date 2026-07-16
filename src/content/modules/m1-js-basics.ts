@@ -3,16 +3,82 @@ import type { Module } from '../types'
 export const m1JsBasics: Module = {
   id: 'js-basics',
   title: 'Основы JavaScript',
-  description: 'Переменные, типы, строки, числа, условия, циклы, массивы, объекты и функции.',
+  description:
+    'С абсолютного нуля: вывод, переменные, типы, условия, циклы — и только потом функции, массивы и объекты.',
   color: '#f7df1e',
   icon: '🟡',
   lessons: [
     {
       id: 'l1-hello',
-      title: 'Привет, код!',
-      subtitle: 'Переменные и вывод',
-      xp: 30,
+      title: 'Твоя первая программа',
+      subtitle: 'Команды и вывод',
+      xp: 25,
       icon: '👋',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Что такое программа',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Программа — это список **команд**, которые компьютер выполняет по порядку: сверху вниз, строка за строкой.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "console.log('Привет!')\nconsole.log('Я — твоя первая программа')",
+            },
+            {
+              type: 'text',
+              md: 'Команда `console.log(...)` печатает то, что стоит в скобках, в **консоль** — специальное окно вывода. Текст берём в кавычки: `\'вот так\'`.',
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Здесь не нужно ничего устанавливать: жми «Запустить» — и увидишь вывод своей программы прямо под редактором.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Какая команда печатает текст в консоль?',
+          options: ['print()', 'console.log()', 'echo()', 'show()'],
+          answer: 1,
+          explanation: 'В JavaScript за вывод отвечает `console.log(...)`.',
+        },
+        {
+          kind: 'code',
+          title: 'Поздоровайся с Байтом',
+          lang: 'js',
+          prompt:
+            'Программа уже печатает «Привет, мир!». Поменяй текст в кавычках, чтобы она вывела `Привет, Байт!`',
+          starter: "console.log('Привет, мир!')",
+          expectedOutput: ['Привет, Байт!'],
+          hints: ['Меняй только текст между кавычками.'],
+          solution: "console.log('Привет, Байт!')",
+        },
+        {
+          kind: 'code',
+          title: 'Три строки подряд',
+          lang: 'js',
+          prompt:
+            'Команды выполняются по порядку. Напиши программу из трёх команд, которая выведет три строки: `Я`, потом `учусь`, потом `кодить`.',
+          starter: "console.log('Я')\n",
+          expectedOutput: ['Я', 'учусь', 'кодить'],
+          hints: [
+            'Каждый console.log печатает одну строку.',
+            "Добавь ещё две команды: console.log('учусь') и console.log('кодить')",
+          ],
+          solution: "console.log('Я')\nconsole.log('учусь')\nconsole.log('кодить')",
+        },
+      ],
+    },
+    {
+      id: 'l2-variables',
+      title: 'Переменные',
+      subtitle: 'Коробки для данных',
+      xp: 30,
+      icon: '📦',
       steps: [
         {
           kind: 'theory',
@@ -25,7 +91,7 @@ export const m1JsBasics: Module = {
             {
               type: 'code',
               lang: 'js',
-              code: "let name = 'Аня'\nconst pi = 3.14\nconsole.log(name)",
+              code: "let city = 'Москва'\nconst pi = 3.14\nconsole.log(city)",
             },
             {
               type: 'text',
@@ -34,7 +100,7 @@ export const m1JsBasics: Module = {
             {
               type: 'callout',
               tone: 'tip',
-              md: '`console.log(...)` печатает значение — твой главный инструмент, чтобы «заглянуть внутрь» программы.',
+              md: 'Имя переменной пишется без кавычек. `console.log(city)` напечатает содержимое коробки, а `console.log(\'city\')` — просто слово «city».',
             },
           ],
         },
@@ -56,27 +122,35 @@ export const m1JsBasics: Module = {
         },
         {
           kind: 'code',
-          title: 'Первая функция',
+          title: 'Привет из переменной',
           lang: 'js',
           prompt:
-            'Напиши функцию `greet(name)`, которая возвращает строку вида `Привет, Аня!` — слово «Привет, », переданное имя и «!».',
-          entry: 'greet',
-          starter: 'function greet(name) {\n  \n}',
-          tests: [
-            { name: "greet('Аня') → 'Привет, Аня!'", args: ['Аня'], expected: 'Привет, Аня!' },
-            { name: "greet('Мир') → 'Привет, Мир!'", args: ['Мир'], expected: 'Привет, Мир!' },
-            { name: "greet('JS') → 'Привет, JS!'", args: ['JS'], expected: 'Привет, JS!' },
-          ],
+            'Переменная `name` уже создана. Склей приветствие через `+` и выведи `Привет, Байт!` — не пиши имя в тексте руками, используй переменную.',
+          starter: "const name = 'Байт'\n",
+          expectedOutput: ['Привет, Байт!'],
+          mustUse: ['name'],
           hints: [
-            'Шаблонные строки — в обратных кавычках: `` `Привет, ${name}!` ``',
-            'Не забудь return.',
+            "Строки склеиваются плюсом: 'Привет, ' + name",
+            "console.log('Привет, ' + name + '!')",
           ],
-          solution: 'function greet(name) {\n  return `Привет, ${name}!`\n}',
+          solution: "const name = 'Байт'\nconsole.log('Привет, ' + name + '!')",
+        },
+        {
+          kind: 'code',
+          title: 'Измени значение',
+          lang: 'js',
+          prompt:
+            'Счёт игры хранится в `score`. Увеличь его на 5 (запиши в переменную новое значение) и выведи результат — должно получиться `15`.',
+          starter: 'let score = 10\n',
+          expectedOutput: ['15'],
+          mustUse: ['score'],
+          hints: ['Новое значение: score = score + 5', 'Потом console.log(score)'],
+          solution: 'let score = 10\nscore = score + 5\nconsole.log(score)',
         },
       ],
     },
     {
-      id: 'l2-types',
+      id: 'l3-types',
       title: 'Типы данных',
       subtitle: 'Числа, строки, булевы',
       xp: 30,
@@ -118,86 +192,15 @@ export const m1JsBasics: Module = {
         },
         {
           kind: 'code',
-          title: 'Сложение чисел',
+          title: 'Определи типы',
           lang: 'js',
           prompt:
-            'Напиши функцию `sum(a, b)`, которая возвращает **сумму** двух чисел (именно чисел, а не строк).',
-          entry: 'sum',
-          starter: 'function sum(a, b) {\n  \n}',
-          tests: [
-            { name: 'sum(2, 3) → 5', args: [2, 3], expected: 5 },
-            { name: 'sum(-4, 10) → 6', args: [-4, 10], expected: 6 },
-            { name: 'sum(0, 0) → 0', args: [0, 0], expected: 0 },
-          ],
-          hints: ['Верни a + b.'],
-          solution: 'function sum(a, b) {\n  return a + b\n}',
-        },
-      ],
-    },
-    {
-      id: 'l3-strings',
-      title: 'Строки',
-      subtitle: 'Текст и его методы',
-      xp: 40,
-      icon: '🔤',
-      steps: [
-        {
-          kind: 'theory',
-          title: 'Работа со строками',
-          blocks: [
-            {
-              type: 'text',
-              md: 'У строк много встроенных возможностей:\n\n- `.length` — длина\n- `.toUpperCase()` / `.toLowerCase()` — регистр\n- `.includes(x)` — содержит ли подстроку\n- `.slice(a, b)` — вырезать кусок\n- `s[0]` — символ по индексу (с нуля)',
-            },
-            {
-              type: 'code',
-              lang: 'js',
-              code: "'привет'.length          // 6\n'js'.toUpperCase()       // 'JS'\n'кодер'.includes('код')  // true\n'привет'[0]              // 'п'",
-            },
-            {
-              type: 'callout',
-              tone: 'tip',
-              md: 'Шаблонные строки `` `...${x}...` `` удобнее склеивания через `+`.',
-            },
-          ],
-        },
-        {
-          kind: 'quiz',
-          question: "Что вернёт `'hello'.length`?",
-          options: ['4', '5', '6', "'hello'"],
-          answer: 1,
-          explanation: 'В слове «hello» пять символов.',
-        },
-        {
-          kind: 'code',
-          title: 'Крик',
-          lang: 'js',
-          prompt:
-            'Напиши функцию `shout(s)`, которая возвращает строку в ВЕРХНЕМ регистре с восклицательным знаком в конце. `shout("да")` → `"ДА!"`.',
-          entry: 'shout',
-          starter: 'function shout(s) {\n  \n}',
-          tests: [
-            { name: 'shout("да") → "ДА!"', args: ['да'], expected: 'ДА!' },
-            { name: 'shout("hello") → "HELLO!"', args: ['hello'], expected: 'HELLO!' },
-            { name: 'shout("") → "!"', args: [''], expected: '!' },
-          ],
-          hints: ['toUpperCase() переводит в верхний регистр.', "return s.toUpperCase() + '!'"],
-          solution: "function shout(s) {\n  return s.toUpperCase() + '!'\n}",
-        },
-        {
-          kind: 'code',
-          title: 'Инициалы',
-          lang: 'js',
-          prompt:
-            'Напиши функцию `initials(first, last)`, возвращающую инициалы заглавными буквами. `initials("иван", "петров")` → `"ИП"`.',
-          entry: 'initials',
-          starter: 'function initials(first, last) {\n  \n}',
-          tests: [
-            { name: 'иван петров → ИП', args: ['иван', 'петров'], expected: 'ИП' },
-            { name: 'anna smith → AS', args: ['anna', 'smith'], expected: 'AS' },
-          ],
-          hints: ['Первый символ строки — s[0].', "return (first[0] + last[0]).toUpperCase()"],
-          solution: 'function initials(first, last) {\n  return (first[0] + last[0]).toUpperCase()\n}',
+            'Первая команда уже выводит тип числа. Добавь ещё две: выведи тип строки `\'привет\'` и тип значения `true`.',
+          starter: 'console.log(typeof 42)\n',
+          expectedOutput: ['number', 'string', 'boolean'],
+          mustUse: ['typeof'],
+          hints: ["console.log(typeof 'привет')", 'console.log(typeof true)'],
+          solution: "console.log(typeof 42)\nconsole.log(typeof 'привет')\nconsole.log(typeof true)",
         },
       ],
     },
@@ -205,7 +208,7 @@ export const m1JsBasics: Module = {
       id: 'l4-numbers',
       title: 'Числа и Math',
       subtitle: 'Арифметика и округление',
-      xp: 40,
+      xp: 35,
       icon: '➗',
       steps: [
         {
@@ -232,39 +235,110 @@ export const m1JsBasics: Module = {
         },
         {
           kind: 'code',
-          title: 'Среднее трёх',
+          title: 'Мини-калькулятор',
           lang: 'js',
-          prompt: 'Напиши функцию `average(a, b, c)`, возвращающую среднее арифметическое трёх чисел.',
-          entry: 'average',
-          starter: 'function average(a, b, c) {\n  \n}',
-          tests: [
-            { name: 'average(2, 4, 6) → 4', args: [2, 4, 6], expected: 4 },
-            { name: 'average(10, 20, 30) → 20', args: [10, 20, 30], expected: 20 },
-            { name: 'average(0, 0, 0) → 0', args: [0, 0, 0], expected: 0 },
-          ],
-          hints: ['Сложи три числа и раздели на 3.', 'return (a + b + c) / 3'],
-          solution: 'function average(a, b, c) {\n  return (a + b + c) / 3\n}',
+          prompt:
+            'Числа `a` и `b` уже заданы. Выведи три строки: их сумму, произведение и остаток от деления `a` на `b`.',
+          starter: 'const a = 7\nconst b = 3\n',
+          expectedOutput: ['10', '21', '1'],
+          mustUse: ['%'],
+          hints: ['Сумма: console.log(a + b)', 'Произведение: a * b, остаток: a % b'],
+          solution:
+            'const a = 7\nconst b = 3\nconsole.log(a + b)\nconsole.log(a * b)\nconsole.log(a % b)',
+        },
+        {
+          kind: 'blank',
+          title: 'Степень и остаток',
+          prompt: 'Впиши операторы: первая строка должна вывести 8, вторая — 2.',
+          lang: 'js',
+          template: 'console.log(2 ___ 3)\nconsole.log(10 ___ 4)',
+          blanks: [{ answer: '**' }, { answer: '%' }],
+          hints: ['2 в степени 3 = 8.', 'Остаток от деления 10 на 4 равен 2.'],
         },
         {
           kind: 'code',
-          title: 'Чётное число?',
+          title: 'Округли и выбери максимум',
           lang: 'js',
           prompt:
-            'Напиши функцию `isEven(n)`, возвращающую `true`, если число чётное, и `false` иначе. Подсказка: чётное делится на 2 без остатка.',
-          entry: 'isEven',
-          starter: 'function isEven(n) {\n  \n}',
-          tests: [
-            { name: 'isEven(4) → true', args: [4], expected: true },
-            { name: 'isEven(7) → false', args: [7], expected: false },
-            { name: 'isEven(0) → true', args: [0], expected: true },
-          ],
-          hints: ['Остаток от деления на 2 у чётных равен 0.', 'return n % 2 === 0'],
-          solution: 'function isEven(n) {\n  return n % 2 === 0\n}',
+            'Первая команда округляет 4.7. Добавь вторую: выведи максимальное из чисел 3, 8 и 5 с помощью `Math.max`.',
+          starter: 'console.log(Math.round(4.7))\n',
+          expectedOutput: ['5', '8'],
+          mustUse: ['Math.round', 'Math.max'],
+          hints: ['console.log(Math.max(3, 8, 5))'],
+          solution: 'console.log(Math.round(4.7))\nconsole.log(Math.max(3, 8, 5))',
         },
       ],
     },
     {
-      id: 'l5-conditions',
+      id: 'l5-strings',
+      title: 'Строки',
+      subtitle: 'Текст и его методы',
+      xp: 40,
+      icon: '🔤',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Работа со строками',
+          blocks: [
+            {
+              type: 'text',
+              md: 'У строк много встроенных возможностей:\n\n- `.length` — длина\n- `.toUpperCase()` / `.toLowerCase()` — регистр\n- `.includes(x)` — содержит ли подстроку\n- `.slice(a, b)` — вырезать кусок\n- `s[0]` — символ по индексу (с нуля)',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "'привет'.length          // 6\n'js'.toUpperCase()       // 'JS'\n'кодер'.includes('код')  // true\n'привет'[0]              // 'п'",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Шаблонные строки в обратных кавычках `` `Привет, ${name}!` `` подставляют переменные прямо в текст — удобнее склеивания через `+`.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: "Что вернёт `'hello'.length`?",
+          options: ['4', '5', '6', "'hello'"],
+          answer: 1,
+          explanation: 'В слове «hello» пять символов.',
+        },
+        {
+          kind: 'blank',
+          title: 'Шаблонная строка',
+          prompt: 'Впиши символ, который подставляет переменную в шаблонную строку.',
+          lang: 'js',
+          template: "const name = 'Аня'\nconsole.log(`Привет, ___{name}!`)",
+          blanks: [{ answer: '$' }],
+          hints: ['Подстановка выглядит так: ${переменная}'],
+        },
+        {
+          kind: 'code',
+          title: 'Исследуй слово',
+          lang: 'js',
+          prompt:
+            'Слово уже в переменной `word`. Выведи три строки: его длину, его в ВЕРХНЕМ регистре и его первую букву.',
+          starter: "const word = 'javascript'\n",
+          expectedOutput: ['10', 'JAVASCRIPT', 'j'],
+          mustUse: ['.length', '.toUpperCase'],
+          hints: [
+            'Длина: word.length, регистр: word.toUpperCase()',
+            'Первая буква: word[0]',
+          ],
+          solution:
+            "const word = 'javascript'\nconsole.log(word.length)\nconsole.log(word.toUpperCase())\nconsole.log(word[0])",
+        },
+        {
+          kind: 'quiz',
+          question: "Что вернёт `'программа'.includes('грамм')`?",
+          options: ['true', 'false', "'грамм'", 'ошибку'],
+          answer: 0,
+          explanation: 'Подстрока «грамм» есть внутри слова «программа», поэтому true.',
+        },
+      ],
+    },
+    {
+      id: 'l6-conditions',
       title: 'Условия',
       subtitle: 'if / else и логика',
       xp: 45,
@@ -281,11 +355,11 @@ export const m1JsBasics: Module = {
             {
               type: 'code',
               lang: 'js',
-              code: "if (age >= 18) {\n  return 'взрослый'\n} else {\n  return 'ребёнок'\n}",
+              code: "const age = 20\nif (age >= 18) {\n  console.log('взрослый')\n} else {\n  console.log('ребёнок')\n}",
             },
             {
               type: 'text',
-              md: 'Логика: `&&` (и), `||` (или), `!` (не). Короткая запись — тернарный оператор: `условие ? а : б`.',
+              md: 'Логика: `&&` (и), `||` (или), `!` (не). Несколько веток: `if ... else if ... else`.',
             },
           ],
         },
@@ -299,37 +373,51 @@ export const m1JsBasics: Module = {
         {
           kind: 'order',
           title: 'Собери проверку возраста',
-          prompt: 'Расставь строки так, чтобы функция возвращала «взрослый» для 18+ и «ребёнок» иначе.',
+          prompt: 'Расставь строки так, чтобы программа вывела «взрослый» для 18+ и «ребёнок» иначе.',
           lang: 'js',
           lines: [
-            'function category(age) {',
-            "  if (age >= 18) return 'взрослый'",
-            "  return 'ребёнок'",
+            'const age = 20',
+            'if (age >= 18) {',
+            "  console.log('взрослый')",
+            '} else {',
+            "  console.log('ребёнок')",
             '}',
           ],
-          hints: ['Сначала объявление, потом проверка, потом ответ по умолчанию, потом скобка.'],
+          hints: ['Сначала данные, потом проверка, потом обе ветки.'],
         },
         {
           kind: 'code',
-          title: 'Знак числа',
+          title: 'Взрослый или ребёнок',
           lang: 'js',
           prompt:
-            'Напиши функцию `sign(n)`: для положительного числа верни `"плюс"`, для отрицательного `"минус"`, для нуля `"ноль"`.',
-          entry: 'sign',
-          starter: 'function sign(n) {\n  \n}',
-          tests: [
-            { name: 'sign(5) → "плюс"', args: [5], expected: 'плюс' },
-            { name: 'sign(-3) → "минус"', args: [-3], expected: 'минус' },
-            { name: 'sign(0) → "ноль"', args: [0], expected: 'ноль' },
-          ],
-          hints: ['Три ветки: n > 0, n < 0, иначе.'],
+            'Возраст задан в `age`. Напиши условие: если `age` больше или равен 18 — выведи `взрослый`, иначе — `ребёнок`.',
+          starter: 'const age = 15\n',
+          expectedOutput: ['ребёнок'],
+          mustUse: ['if', 'else'],
+          hints: ['if (age >= 18) { ... } else { ... }'],
           solution:
-            "function sign(n) {\n  if (n > 0) return 'плюс'\n  if (n < 0) return 'минус'\n  return 'ноль'\n}",
+            "const age = 15\nif (age >= 18) {\n  console.log('взрослый')\n} else {\n  console.log('ребёнок')\n}",
+        },
+        {
+          kind: 'code',
+          title: 'Прогноз погоды',
+          lang: 'js',
+          prompt:
+            'Температура в `temp`. Выведи `жарко`, если больше 25; `тепло`, если больше 10; иначе `холодно`. Три ветки: `if / else if / else`.',
+          starter: 'const temp = 30\n',
+          expectedOutput: ['жарко'],
+          mustUse: ['if', 'else'],
+          hints: [
+            'Первая ветка: if (temp > 25) { ... }',
+            "else if (temp > 10) { console.log('тепло') } else { console.log('холодно') }",
+          ],
+          solution:
+            "const temp = 30\nif (temp > 25) {\n  console.log('жарко')\n} else if (temp > 10) {\n  console.log('тепло')\n} else {\n  console.log('холодно')\n}",
         },
       ],
     },
     {
-      id: 'l6-loops',
+      id: 'l7-loops',
       title: 'Циклы',
       subtitle: 'Повторяем действия',
       xp: 50,
@@ -346,7 +434,7 @@ export const m1JsBasics: Module = {
             {
               type: 'code',
               lang: 'js',
-              code: 'let total = 0\nfor (let i = 1; i <= 3; i++) {\n  total += i\n}\n// total = 6',
+              code: "for (let i = 1; i <= 3; i++) {\n  console.log(i)\n}\n// выведет 1, 2, 3",
             },
             {
               type: 'callout',
@@ -363,50 +451,164 @@ export const m1JsBasics: Module = {
           explanation: 'i принимает значения 0,1,2,3,4 — это 5 итераций.',
         },
         {
-          kind: 'code',
-          title: 'Факториал',
+          kind: 'blank',
+          title: 'Настрой цикл',
+          prompt: 'Впиши недостающие части, чтобы программа вывела 0, 1, 2.',
           lang: 'js',
-          prompt:
-            'Напиши функцию `factorial(n)`, возвращающую произведение всех чисел от 1 до n. `factorial(5)` = 1·2·3·4·5 = 120. По договорённости `factorial(0)` = 1.',
-          entry: 'factorial',
-          starter: 'function factorial(n) {\n  \n}',
-          tests: [
-            { name: 'factorial(5) → 120', args: [5], expected: 120 },
-            { name: 'factorial(1) → 1', args: [1], expected: 1 },
-            { name: 'factorial(0) → 1', args: [0], expected: 1 },
-            { name: 'factorial(6) → 720', args: [6], expected: 720 },
-          ],
-          hints: [
-            'Заведи аккумулятор = 1 и умножай на i в цикле.',
-            'for (let i = 1; i <= n; i++) result *= i',
-          ],
-          solution:
-            'function factorial(n) {\n  let result = 1\n  for (let i = 1; i <= n; i++) {\n    result *= i\n  }\n  return result\n}',
+          template: 'for (let i = 0; i ___ 3; i___) {\n  console.log(i)\n}',
+          blanks: [{ answer: '<' }, { answer: '++' }],
+          hints: ['Продолжаем, пока i меньше 3.', 'Шаг: i++'],
         },
         {
           kind: 'code',
-          title: 'Считаем гласные',
+          title: 'Считаем до пяти',
+          lang: 'js',
+          prompt: 'Допиши тело цикла, чтобы программа вывела числа от 1 до 5 — каждое с новой строки.',
+          starter: 'for (let i = 1; i <= 5; i++) {\n  \n}',
+          expectedOutput: ['1', '2', '3', '4', '5'],
+          mustUse: ['for'],
+          hints: ['Внутри цикла печатай i: console.log(i)'],
+          solution: 'for (let i = 1; i <= 5; i++) {\n  console.log(i)\n}',
+        },
+        {
+          kind: 'code',
+          title: 'Сумма чисел',
           lang: 'js',
           prompt:
-            'Напиши функцию `countVowels(s)`, считающую английские гласные (a, e, i, o, u) в строке, без учёта регистра.',
-          entry: 'countVowels',
-          starter: 'function countVowels(s) {\n  \n}',
-          tests: [
-            { name: 'countVowels("hello") → 2', args: ['hello'], expected: 2 },
-            { name: 'countVowels("xyz") → 0', args: ['xyz'], expected: 0 },
-            { name: 'countVowels("AEIOU") → 5', args: ['AEIOU'], expected: 5 },
-          ],
+            'Посчитай сумму чисел от 1 до 10 с помощью цикла и переменной-копилки `total`, затем выведи её. Должно получиться `55`.',
+          starter: 'let total = 0\n',
+          expectedOutput: ['55'],
+          mustUse: ['for', 'total'],
           hints: [
-            'Приведи строку к нижнему регистру и пройди по символам.',
-            "'aeiou'.includes(c) проверит, гласная ли c.",
+            'for (let i = 1; i <= 10; i++) { total += i }',
+            'После цикла: console.log(total)',
           ],
           solution:
-            "function countVowels(s) {\n  let count = 0\n  for (const c of s.toLowerCase()) {\n    if ('aeiou'.includes(c)) count++\n  }\n  return count\n}",
+            'let total = 0\nfor (let i = 1; i <= 10; i++) {\n  total += i\n}\nconsole.log(total)',
         },
       ],
     },
     {
-      id: 'l7-arrays',
+      id: 'l8-functions',
+      title: 'Функции',
+      subtitle: 'Код, который можно вызывать',
+      xp: 55,
+      icon: '🧰',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Зачем нужны функции',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Функция — это **именованный кусок программы**, который можно запускать сколько угодно раз. Написал один раз — вызывай где нужно.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "function greet(name) {\n  return 'Привет, ' + name + '!'\n}\n\nconsole.log(greet('Аня'))\nconsole.log(greet('Мир'))",
+            },
+            {
+              type: 'text',
+              md: 'Разбор по частям:\n\n- `function greet(name)` — объявление: имя функции и **параметр** (входные данные)\n- `return` — функция **возвращает** результат тому, кто её вызвал\n- `greet(\'Аня\')` — **вызов**: параметр name получает значение «Аня»',
+            },
+            {
+              type: 'callout',
+              tone: 'warning',
+              md: 'Объявленная функция сама по себе ничего не делает — она ждёт, пока её **вызовут**. `return` отдаёт значение, а `console.log` только печатает.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Что делает `return` внутри функции?',
+          options: [
+            'печатает значение в консоль',
+            'возвращает значение и завершает функцию',
+            'повторяет функцию заново',
+            'удаляет функцию',
+          ],
+          answer: 1,
+          explanation: 'return отдаёт результат наружу и сразу завершает выполнение функции.',
+        },
+        {
+          kind: 'code',
+          title: 'Вызови функцию',
+          lang: 'js',
+          prompt:
+            'Функция `double` уже написана — она удваивает число. Вызови её для чисел 5 и 8 и выведи оба результата.',
+          starter: 'function double(n) {\n  return n * 2\n}\n',
+          expectedOutput: ['10', '16'],
+          mustUse: ['double('],
+          hints: ['console.log(double(5))', 'И ещё раз для 8.'],
+          solution:
+            'function double(n) {\n  return n * 2\n}\nconsole.log(double(5))\nconsole.log(double(8))',
+        },
+        {
+          kind: 'code',
+          title: 'Первая своя функция',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `greet(name)`, которая возвращает строку вида `Привет, Аня!` — слово «Привет, », переданное имя и «!».',
+          entry: 'greet',
+          starter: 'function greet(name) {\n  \n}',
+          tests: [
+            { name: "greet('Аня') → 'Привет, Аня!'", args: ['Аня'], expected: 'Привет, Аня!' },
+            { name: "greet('Мир') → 'Привет, Мир!'", args: ['Мир'], expected: 'Привет, Мир!' },
+            { name: "greet('JS') → 'Привет, JS!'", args: ['JS'], expected: 'Привет, JS!' },
+          ],
+          hints: [
+            'Шаблонные строки — в обратных кавычках: `` `Привет, ${name}!` ``',
+            'Не забудь return.',
+          ],
+          solution: 'function greet(name) {\n  return `Привет, ${name}!`\n}',
+        },
+        {
+          kind: 'order',
+          title: 'Собери функцию-проверку',
+          prompt: 'Расставь строки так, чтобы функция возвращала «взрослый» для 18+ и «ребёнок» иначе.',
+          lang: 'js',
+          lines: [
+            'function category(age) {',
+            "  if (age >= 18) return 'взрослый'",
+            "  return 'ребёнок'",
+            '}',
+          ],
+          hints: ['Сначала объявление, потом проверка, потом ответ по умолчанию, потом скобка.'],
+        },
+        {
+          kind: 'quiz',
+          question: 'Чем `return x` отличается от `console.log(x)`?',
+          options: [
+            'ничем, это синонимы',
+            'return отдаёт значение из функции, log только печатает',
+            'console.log работает быстрее',
+            'return можно писать только один раз в программе',
+          ],
+          answer: 1,
+          explanation:
+            'return передаёт результат дальше в программу, а console.log лишь показывает значение человеку.',
+        },
+        {
+          kind: 'code',
+          title: 'Чётное число?',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `isEven(n)`, возвращающую `true`, если число чётное, и `false` иначе. Чётное — делится на 2 без остатка.',
+          entry: 'isEven',
+          starter: 'function isEven(n) {\n  \n}',
+          tests: [
+            { name: 'isEven(4) → true', args: [4], expected: true },
+            { name: 'isEven(7) → false', args: [7], expected: false },
+            { name: 'isEven(0) → true', args: [0], expected: true },
+          ],
+          hints: ['Остаток от деления на 2 у чётных равен 0.', 'return n % 2 === 0'],
+          solution: 'function isEven(n) {\n  return n % 2 === 0\n}',
+        },
+      ],
+    },
+    {
+      id: 'l9-arrays',
       title: 'Массивы',
       subtitle: 'Списки значений',
       xp: 50,
@@ -464,10 +666,31 @@ export const m1JsBasics: Module = {
           hints: ['Последний индекс — arr.length - 1.'],
           solution: 'function lastElement(arr) {\n  return arr[arr.length - 1]\n}',
         },
+        {
+          kind: 'code',
+          title: 'Считаем чётные',
+          lang: 'js',
+          prompt:
+            'Напиши функцию `countEven(arr)`, возвращающую количество чётных чисел в массиве. Пригодятся цикл и условие.',
+          entry: 'countEven',
+          starter: 'function countEven(arr) {\n  \n}',
+          tests: [
+            { name: 'countEven([1,2,3,4]) → 2', args: [[1, 2, 3, 4]], expected: 2 },
+            { name: 'countEven([1,3,5]) → 0', args: [[1, 3, 5]], expected: 0 },
+            { name: 'countEven([2,4,6]) → 3', args: [[2, 4, 6]], expected: 3 },
+            { name: 'countEven([]) → 0', args: [[]], expected: 0 },
+          ],
+          hints: [
+            'Заведи счётчик, пройди циклом for..of.',
+            'if (n % 2 === 0) count++',
+          ],
+          solution:
+            'function countEven(arr) {\n  let count = 0\n  for (const n of arr) {\n    if (n % 2 === 0) count++\n  }\n  return count\n}',
+        },
       ],
     },
     {
-      id: 'l8-objects',
+      id: 'l10-objects',
       title: 'Объекты',
       subtitle: 'Ключ — значение',
       xp: 55,
@@ -551,9 +774,9 @@ export const m1JsBasics: Module = {
       ],
     },
     {
-      id: 'l9-functions',
+      id: 'l11-functions-deep',
       title: 'Функции глубже',
-      subtitle: 'Параметры и возврат',
+      subtitle: 'Стрелки и параметры по умолчанию',
       xp: 55,
       icon: '🧩',
       steps: [
@@ -573,7 +796,7 @@ export const m1JsBasics: Module = {
             {
               type: 'callout',
               tone: 'info',
-              md: 'Значение по умолчанию используется, если аргумент не передан.',
+              md: 'Стрелочная запись `(a, b) => a * b` — короткая форма: справа от стрелки сразу возвращаемое значение.',
             },
           ],
         },
@@ -583,6 +806,23 @@ export const m1JsBasics: Module = {
           options: ["'друг'", 'undefined', 'ошибку', "''"],
           answer: 0,
           explanation: 'Аргумент не передан → берётся значение по умолчанию «друг».',
+        },
+        {
+          kind: 'code',
+          title: 'Стрелочная функция',
+          lang: 'js',
+          prompt:
+            'Запиши стрелочную функцию `triple`, возвращающую число, умноженное на 3.',
+          entry: 'triple',
+          starter: 'const triple = ',
+          mustUse: ['=>'],
+          tests: [
+            { name: 'triple(3) → 9', args: [3], expected: 9 },
+            { name: 'triple(0) → 0', args: [0], expected: 0 },
+            { name: 'triple(-2) → -6', args: [-2], expected: -6 },
+          ],
+          hints: ['const triple = (n) => n * 3'],
+          solution: 'const triple = (n) => n * 3',
         },
         {
           kind: 'code',
@@ -628,7 +868,7 @@ export const m1JsBasics: Module = {
       ],
     },
     {
-      id: 'l10-errors',
+      id: 'l12-errors',
       title: 'Обработка ошибок',
       subtitle: 'try / catch',
       xp: 55,
