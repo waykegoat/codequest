@@ -89,6 +89,20 @@ export interface DomStep {
   solution?: string
 }
 
+export interface SqlStep {
+  kind: 'sql'
+  title: string
+  prompt: string
+
+  schema: string
+  starter: string
+  solution: string
+
+  verify?: string
+  orderMatters?: boolean
+  hints?: string[]
+}
+
 export interface BlankStep {
   kind: 'blank'
   title: string
@@ -114,6 +128,7 @@ export type LessonStep =
   | CodeStep
   | MarkupStep
   | DomStep
+  | SqlStep
   | BlankStep
   | OrderStep
 

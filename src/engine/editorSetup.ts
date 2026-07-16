@@ -4,9 +4,10 @@ import { tags as t } from '@lezer/highlight'
 import { javascript } from '@codemirror/lang-javascript'
 import { html } from '@codemirror/lang-html'
 import { css } from '@codemirror/lang-css'
+import { sql, SQLite } from '@codemirror/lang-sql'
 import type { Extension } from '@codemirror/state'
 
-export type EditorLang = 'js' | 'ts' | 'html' | 'css'
+export type EditorLang = 'js' | 'ts' | 'html' | 'css' | 'sql'
 
 export function langExtension(lang: EditorLang): Extension {
   switch (lang) {
@@ -14,6 +15,8 @@ export function langExtension(lang: EditorLang): Extension {
       return html({ autoCloseTags: true, matchClosingTags: true, selfClosingTags: true })
     case 'css':
       return css()
+    case 'sql':
+      return sql({ dialect: SQLite, upperCaseKeywords: true })
     case 'ts':
       return javascript({ typescript: true })
     default:

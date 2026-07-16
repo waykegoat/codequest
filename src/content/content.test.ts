@@ -1,7 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
+import { readFileSync } from 'node:fs'
+import initSqlJs, { type SqlJsStatic } from 'sql.js'
 import { course, flatLessons, findLesson, nextLesson } from './index'
-import type { CodeStep, DomStep } from './types'
+import type { CodeStep, DomStep, SqlStep } from './types'
 import { runDomActions, runMarkupChecks } from '@/engine/markupRunner'
+import { runSql } from '@/engine/sqlRunner'
 
 describe('структура курса', () => {
   it('есть модули и уроки', () => {
@@ -94,6 +97,39 @@ describe('корректность DOM-задач (эталонные решен
       } finally {
         document.body.innerHTML = ''
       }
+    })
+  }
+})
+
+describe('корректность SQL-задач (эталонные решения выполняются в SQLite)', () => {
+  let SQL: SqlJsStatic
+
+  beforeAll(async () => {
+    const wasmBinary = readFileSync('./node_modules/sql.js/dist/sql-wasm.wasm')
+    SQL = await initSqlJs({ wasmBinary })
+  })
+
+  const sqlSteps: { title: string; step: SqlStep }[] = []
+  for (const f of flatLessons) {
+    for (const step of f.lesson.steps) {
+      if (step.kind === 'sql') {
+        sqlSteps.push({ title: `${f.fullId} · ${step.title}`, step })
+      }
+    }
+  }
+
+  for (const { title, step } of sqlSteps) {
+    it(title, () => {
+      const outcome = runSql(
+        SQL,
+        step.schema,
+        step.solution,
+        step.solution,
+        step.verify,
+        step.orderMatters ?? false,
+      )
+      expect(outcome.error, outcome.error).toBeUndefined()
+      expect(outcome.passed).toBe(true)
     })
   }
 })

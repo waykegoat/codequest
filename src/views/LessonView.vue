@@ -10,11 +10,12 @@ import QuizStep from '@/components/steps/QuizStep.vue'
 import CodeStep from '@/components/steps/CodeStep.vue'
 import MarkupStep from '@/components/steps/MarkupStep.vue'
 import DomStep from '@/components/steps/DomStep.vue'
+import SqlStep from '@/components/steps/SqlStep.vue'
 import BlankStep from '@/components/steps/BlankStep.vue'
 import OrderStep from '@/components/steps/OrderStep.vue'
 import MascotCoach from '@/components/MascotCoach.vue'
 
-type StepKind = 'theory' | 'quiz' | 'code' | 'markup' | 'dom' | 'blank' | 'order'
+type StepKind = 'theory' | 'quiz' | 'code' | 'markup' | 'dom' | 'sql' | 'blank' | 'order'
 
 const STEP_ICON: Record<StepKind, string> = {
   theory: '📖',
@@ -22,6 +23,7 @@ const STEP_ICON: Record<StepKind, string> = {
   code: '⌨️',
   markup: '🎨',
   dom: '🖱️',
+  sql: '🗄️',
   blank: '▢',
   order: '↕',
 }
@@ -161,6 +163,8 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
       return { mood: 'thinking', message: 'Свёрстай и нажми «Проверить» — покажу результат!' }
     case 'dom':
       return { mood: 'thinking', message: 'Оживи страницу через JavaScript и жми «Проверить» 🖱️' }
+    case 'sql':
+      return { mood: 'thinking', message: 'Напиши SQL-запрос и запусти — сверю с базой 🗄️' }
     case 'blank':
       return { mood: 'thinking', message: 'Заполни пропуски правильными словами 👀' }
     case 'order':
@@ -232,6 +236,12 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
         />
         <DomStep
           v-else-if="currentStep.kind === 'dom'"
+          :key="currentIndex"
+          :step="currentStep"
+          @solved="onCodeSolved"
+        />
+        <SqlStep
+          v-else-if="currentStep.kind === 'sql'"
           :key="currentIndex"
           :step="currentStep"
           @solved="onCodeSolved"

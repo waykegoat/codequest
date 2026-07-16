@@ -1,122 +1,191 @@
 import type { Module } from '../types'
 
+const usersSeed = `CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, city TEXT);
+INSERT INTO users (id, name, age, city) VALUES
+  (1, 'Аня', 28, 'Москва'),
+  (2, 'Борис', 17, 'Казань'),
+  (3, 'Вера', 34, 'Москва'),
+  (4, 'Глеб', 22, 'Сочи'),
+  (5, 'Дина', 19, 'Казань');`
+
+const shopSeed = `${usersSeed}
+CREATE TABLE orders (id INTEGER PRIMARY KEY, user_id INTEGER, item TEXT, price INTEGER);
+INSERT INTO orders (id, user_id, item, price) VALUES
+  (1, 1, 'Книга', 500),
+  (2, 1, 'Кофе', 300),
+  (3, 3, 'Ноутбук', 60000),
+  (4, 4, 'Мышь', 1200);`
+
 export const m8Databases: Module = {
   id: 'databases',
   title: 'Базы данных и SQL',
-  description: 'Таблицы, SELECT / WHERE, JOIN и агрегация. Мыслим как база данных.',
+  description:
+    'Настоящий SQLite прямо в браузере: SELECT, WHERE, ORDER BY, JOIN, GROUP BY и изменение данных.',
   color: '#eab308',
   icon: '🗄️',
   lessons: [
     {
-      id: 'l1-intro',
-      title: 'Язык запросов SQL',
-      subtitle: 'Данные в таблицах',
-      xp: 40,
+      id: 'l1-select',
+      title: 'Первый запрос',
+      subtitle: 'SELECT и таблицы',
+      xp: 45,
       icon: '🗄️',
       steps: [
         {
           kind: 'theory',
-          title: 'Данные в таблицах',
+          title: 'Данные живут в таблицах',
           blocks: [
             {
               type: 'text',
-              md: 'Реляционная БД хранит данные в **таблицах** (строки и столбцы). SQL — язык, которым мы их запрашиваем.',
+              md: 'База данных хранит данные в **таблицах** — строки и столбцы, как в Excel. `SELECT` выбирает нужные столбцы из таблицы. Здесь ты пишешь настоящий SQL — он выполняется в SQLite прямо в браузере.',
             },
             {
               type: 'code',
               lang: 'sql',
-              code: 'SELECT name, age\nFROM users\nWHERE age >= 18\nORDER BY age DESC;',
+              code: 'SELECT name, age FROM users;',
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: '`SELECT *` выбирает все столбцы. Но лучше перечислять нужные — так запрос понятнее и быстрее. Раскрой «Схему и данные», чтобы видеть таблицу.',
             },
           ],
         },
         {
           kind: 'quiz',
-          question: 'Какая команда SQL достаёт данные из таблицы?',
-          options: ['GET', 'SELECT', 'FETCH', 'READ'],
+          question: 'Какая команда достаёт данные из таблицы?',
+          options: ['GET', 'SELECT', 'FETCH', 'SHOW'],
           answer: 1,
-          explanation: '`SELECT` — основная команда для выборки данных.',
+          explanation: 'SELECT — основная команда выборки данных в SQL.',
         },
         {
           kind: 'blank',
           title: 'Собери запрос',
-          prompt: 'Впиши ключевые слова: выбрать имена совершеннолетних пользователей.',
+          prompt: 'Впиши команду выборки и ключевое слово источника.',
           lang: 'sql',
-          template: 'SELECT name\n___ users\n___ age >= 18;',
-          blanks: [{ answer: 'FROM' }, { answer: 'WHERE' }],
-          hints: ['Источник данных — FROM.', 'Условие — WHERE.'],
+          template: '___ name ___ users;',
+          blanks: [{ answer: 'SELECT' }, { answer: 'FROM' }],
+          hints: ['Выборка — SELECT, источник — FROM.'],
+        },
+        {
+          kind: 'sql',
+          title: 'Выбери имена и города',
+          prompt:
+            'Из таблицы `users` выбери два столбца: `name` и `city` — всех пользователей.',
+          schema: usersSeed,
+          starter: 'SELECT ... FROM users;',
+          solution: 'SELECT name, city FROM users;',
+          hints: ['Перечисли столбцы через запятую: SELECT name, city', 'Источник: FROM users'],
         },
       ],
     },
     {
       id: 'l2-where',
-      title: 'SELECT ... WHERE',
-      subtitle: 'Фильтрация строк',
+      title: 'Фильтрация',
+      subtitle: 'WHERE',
       xp: 55,
       icon: '🔎',
       steps: [
         {
           kind: 'theory',
-          title: 'Выбираем нужные строки',
+          title: 'Отбираем нужные строки',
           blocks: [
             {
               type: 'text',
-              md: '`WHERE` оставляет только строки, удовлетворяющие условию. В JS это прямой аналог `Array.filter`.',
+              md: '`WHERE` оставляет только строки, удовлетворяющие условию. Операторы сравнения: `= > < >= <=`, `!=`. Условия комбинируют через `AND` и `OR`.',
             },
             {
               type: 'code',
               lang: 'sql',
-              code: 'SELECT name FROM users WHERE age >= 18;\n\n-- В JS это эквивалентно:\n-- users.filter(u => u.age >= 18).map(u => u.name)',
+              code: "SELECT name FROM users WHERE age >= 18;\nSELECT name FROM users WHERE city = 'Москва' AND age > 30;",
+            },
+            {
+              type: 'callout',
+              tone: 'info',
+              md: 'Текст в SQL — в одинарных кавычках: `\'Москва\'`. Это прямой аналог `Array.filter` в JavaScript.',
             },
           ],
         },
         {
           kind: 'quiz',
-          question: 'Аналогом SQL `WHERE` в JavaScript является...',
-          options: ['.map()', '.filter()', '.reduce()', '.sort()'],
-          answer: 1,
-          explanation: '`WHERE` фильтрует строки — как `Array.filter`.',
+          question: 'Как в SQL сравнивают на равенство?',
+          options: ['==', '===', '=', 'EQ'],
+          answer: 2,
+          explanation: 'В SQL равенство — один знак «=», в отличие от JavaScript.',
         },
         {
-          kind: 'code',
-          title: 'SELECT name WHERE age',
-          lang: 'js',
+          kind: 'blank',
+          title: 'Добавь условие',
+          prompt: 'Впиши ключевое слово фильтра и оператор «больше или равно».',
+          lang: 'sql',
+          template: 'SELECT name FROM users ___ age ___ 18;',
+          blanks: [{ answer: 'WHERE' }, { answer: '>=' }],
+          hints: ['Фильтр — WHERE.', 'Больше или равно — >=.'],
+        },
+        {
+          kind: 'sql',
+          title: 'Совершеннолетние из Казани',
           prompt:
-            'Дана «таблица» — массив пользователей `{ name, age }`. Напиши функцию `adultsOver(rows, minAge)`, возвращающую массив **имён** тех, у кого `age >= minAge` (порядок сохраняется).',
-          entry: 'adultsOver',
-          starter: 'function adultsOver(rows, minAge) {\n  \n}',
-          tests: [
-            {
-              name: 'порог 18 → ["Аня","Лео"]',
-              args: [
-                [
-                  { name: 'Аня', age: 20 },
-                  { name: 'Ким', age: 15 },
-                  { name: 'Лео', age: 30 },
-                ],
-                18,
-              ],
-              expected: ['Аня', 'Лео'],
-            },
-            {
-              name: 'порог 100 → []',
-              args: [[{ name: 'Аня', age: 20 }], 100],
-              expected: [],
-            },
-          ],
-          hints: [
-            'Сначала filter по age, потом map в name.',
-            'rows.filter(r => r.age >= minAge).map(r => r.name)',
-          ],
-          solution:
-            'function adultsOver(rows, minAge) {\n  return rows.filter((r) => r.age >= minAge).map((r) => r.name)\n}',
+            'Выбери столбцы `name` и `age` пользователей, которым **18 или больше** И город `Казань`.',
+          schema: usersSeed,
+          starter: 'SELECT name, age FROM users\nWHERE ...;',
+          solution: "SELECT name, age FROM users WHERE age >= 18 AND city = 'Казань';",
+          hints: ['Два условия через AND.', "city = 'Казань' — текст в одинарных кавычках."],
         },
       ],
     },
     {
-      id: 'l3-join',
-      title: 'JOIN',
-      subtitle: 'Связываем таблицы',
-      xp: 60,
+      id: 'l3-order',
+      title: 'Сортировка и лимит',
+      subtitle: 'ORDER BY, LIMIT',
+      xp: 55,
+      icon: '🔃',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Упорядочиваем результат',
+          blocks: [
+            {
+              type: 'text',
+              md: '`ORDER BY столбец` сортирует результат. `ASC` — по возрастанию (по умолчанию), `DESC` — по убыванию. `LIMIT n` оставляет только первые `n` строк — так делают топы и постраничную выдачу.',
+            },
+            {
+              type: 'code',
+              lang: 'sql',
+              code: 'SELECT name, age FROM users\nORDER BY age DESC\nLIMIT 3;',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Что делает `ORDER BY price DESC`?',
+          options: [
+            'сортирует по цене от меньшей к большей',
+            'сортирует по цене от большей к меньшей',
+            'оставляет только дорогие товары',
+            'удаляет столбец price',
+          ],
+          answer: 1,
+          explanation: 'DESC — убывание: сначала самые большие значения.',
+        },
+        {
+          kind: 'sql',
+          title: 'Топ-2 самых молодых',
+          prompt:
+            'Выбери `name` и `age` двух **самых молодых** пользователей — отсортируй по возрасту и ограничь двумя строками. Порядок строк важен.',
+          schema: usersSeed,
+          starter: 'SELECT name, age FROM users\nORDER BY ...\nLIMIT ...;',
+          solution: 'SELECT name, age FROM users ORDER BY age ASC LIMIT 2;',
+          orderMatters: true,
+          hints: ['Самые молодые — по возрастанию: ORDER BY age ASC', 'Ограничь: LIMIT 2'],
+        },
+      ],
+    },
+    {
+      id: 'l4-join',
+      title: 'Связываем таблицы',
+      subtitle: 'JOIN',
+      xp: 65,
       icon: '🧷',
       steps: [
         {
@@ -125,168 +194,182 @@ export const m8Databases: Module = {
           blocks: [
             {
               type: 'text',
-              md: '`JOIN` связывает строки двух таблиц по общему ключу (например, `orders.userId = users.id`). Так к заказу подтягивается имя покупателя.',
+              md: '`JOIN` связывает строки двух таблиц по общему ключу. В таблице `orders` есть `user_id` — он указывает на `users.id`. JOIN подтягивает к заказу имя покупателя.',
             },
             {
               type: 'code',
               lang: 'sql',
-              code: 'SELECT users.name, orders.item\nFROM orders\nJOIN users ON orders.userId = users.id;',
-            },
-          ],
-        },
-        {
-          kind: 'quiz',
-          question: 'JOIN нужен, чтобы...',
-          options: [
-            'удалить строки',
-            'связать данные из двух таблиц по ключу',
-            'отсортировать данные',
-            'создать таблицу',
-          ],
-          answer: 1,
-          explanation: 'JOIN объединяет строки таблиц по совпадению ключей.',
-        },
-        {
-          kind: 'blank',
-          title: 'Свяжи таблицы',
-          prompt: 'Впиши ключевые слова соединения таблиц по ключу.',
-          lang: 'sql',
-          template: 'SELECT users.name, orders.item\nFROM orders\n___ users ___ orders.userId = users.id;',
-          blanks: [{ answer: 'JOIN' }, { answer: 'ON' }],
-          hints: ['Соединение — JOIN, условие соединения — ON.'],
-        },
-        {
-          kind: 'code',
-          title: 'Соедини заказы с именами',
-          lang: 'js',
-          prompt:
-            'Даны `users` (`{ id, name }`) и `orders` (`{ userId, item }`). Напиши функцию `joinOrders(users, orders)`, возвращающую для каждого заказа строку `"Имя: товар"` (по порядку заказов).',
-          entry: 'joinOrders',
-          starter: 'function joinOrders(users, orders) {\n  \n}',
-          tests: [
-            {
-              name: 'заказы → ["Аня: Книга","Лео: Кофе"]',
-              args: [
-                [
-                  { id: 1, name: 'Аня' },
-                  { id: 2, name: 'Лео' },
-                ],
-                [
-                  { userId: 1, item: 'Книга' },
-                  { userId: 2, item: 'Кофе' },
-                ],
-              ],
-              expected: ['Аня: Книга', 'Лео: Кофе'],
-            },
-            {
-              name: 'нет заказов → []',
-              args: [[{ id: 1, name: 'Аня' }], []],
-              expected: [],
-            },
-          ],
-          hints: [
-            'Пройди orders через map. Для каждого найди пользователя users.find(u => u.id === o.userId).',
-            'return `${user.name}: ${o.item}`',
-          ],
-          solution:
-            'function joinOrders(users, orders) {\n  return orders.map((o) => {\n    const user = users.find((u) => u.id === o.userId)\n    return `${user.name}: ${o.item}`\n  })\n}',
-        },
-      ],
-    },
-    {
-      id: 'l4-aggregate',
-      title: 'Агрегация',
-      subtitle: 'GROUP BY и COUNT',
-      xp: 60,
-      icon: '📊',
-      steps: [
-        {
-          kind: 'theory',
-          title: 'Группируем и считаем',
-          blocks: [
-            {
-              type: 'text',
-              md: '`GROUP BY` собирает строки в группы, а агрегатные функции (`COUNT`, `SUM`, `AVG`) считают по каждой группе.',
-            },
-            {
-              type: 'code',
-              lang: 'sql',
-              code: 'SELECT status, COUNT(*) AS n\nFROM tasks\nGROUP BY status;',
+              code: 'SELECT users.name, orders.item\nFROM orders\nJOIN users ON orders.user_id = users.id;',
             },
             {
               type: 'callout',
               tone: 'tip',
-              md: 'В JS это удобно делать через `reduce`, накапливая счётчики в объекте.',
+              md: 'Когда столбцы из разных таблиц, пиши `таблица.столбец` — чтобы не было путаницы, у какой таблицы брать поле.',
             },
           ],
         },
         {
           kind: 'quiz',
-          question: 'Что делает COUNT(*) с GROUP BY status?',
+          question: 'Что указывает после `ON` в JOIN?',
           options: [
-            'сортирует по статусу',
-            'считает количество строк в каждой группе статуса',
-            'удаляет дубликаты',
-            'меняет статус',
+            'какие столбцы показать',
+            'условие связи строк двух таблиц',
+            'сортировку',
+            'фильтр по цене',
           ],
           answer: 1,
-          explanation: 'COUNT(*) возвращает число строк в каждой группе.',
+          explanation: 'ON задаёт, как строки одной таблицы соответствуют строкам другой (по ключу).',
         },
         {
           kind: 'blank',
-          title: 'Сгруппируй строки',
-          prompt: 'Впиши два слова, которые собирают строки в группы по статусу.',
+          title: 'Собери JOIN',
+          prompt: 'Впиши ключевые слова соединения таблиц по ключу.',
           lang: 'sql',
-          template: 'SELECT status, COUNT(*) AS n\nFROM tasks\n___ ___ status;',
-          blanks: [{ answer: 'GROUP' }, { answer: 'BY' }],
-          hints: ['Группировка — GROUP BY.'],
+          template:
+            'SELECT users.name, orders.item\nFROM orders\n___ users ___ orders.user_id = users.id;',
+          blanks: [{ answer: 'JOIN' }, { answer: 'ON' }],
+          hints: ['Соединение — JOIN, условие — ON.'],
         },
         {
-          kind: 'code',
-          title: 'Посчитай по статусу',
-          lang: 'js',
+          kind: 'sql',
+          title: 'Кто что купил',
           prompt:
-            'Дан массив задач `{ status }`. Напиши функцию `countByStatus(rows)`, возвращающую объект «статус → количество». Например, две `active` и одна `done` → `{ active: 2, done: 1 }`.',
-          entry: 'countByStatus',
-          starter: 'function countByStatus(rows) {\n  \n}',
-          tests: [
-            {
-              name: '2 active + 1 done → {active:2, done:1}',
-              args: [[{ status: 'active' }, { status: 'active' }, { status: 'done' }]],
-              expected: { active: 2, done: 1 },
-            },
-            { name: 'пусто → {}', args: [[]], expected: {} },
-          ],
-          hints: ['Заведи пустой объект-аккумулятор.', 'acc[r.status] = (acc[r.status] || 0) + 1'],
+            'Для каждого заказа выведи два столбца: имя покупателя (`users.name`) и товар (`orders.item`). Соедини таблицы `orders` и `users` по ключу.',
+          schema: shopSeed,
+          starter: 'SELECT users.name, orders.item\nFROM orders\nJOIN users ON ...;',
           solution:
-            'function countByStatus(rows) {\n  return rows.reduce((acc, r) => {\n    acc[r.status] = (acc[r.status] || 0) + 1\n    return acc\n  }, {})\n}',
+            'SELECT users.name, orders.item FROM orders JOIN users ON orders.user_id = users.id;',
+          hints: ['Ключ связи: orders.user_id = users.id'],
         },
       ],
     },
     {
-      id: 'l5-crud',
-      title: 'INSERT, UPDATE, DELETE',
-      subtitle: 'Меняем данные',
-      xp: 60,
-      icon: '✍️',
+      id: 'l5-aggregate',
+      title: 'Группировка и подсчёты',
+      subtitle: 'GROUP BY, COUNT, SUM',
+      xp: 65,
+      icon: '📊',
       steps: [
         {
           kind: 'theory',
-          title: 'Три команды изменений',
+          title: 'Считаем по группам',
           blocks: [
             {
               type: 'text',
-              md: '- `INSERT INTO` — добавить строку\n- `UPDATE ... SET` — изменить строки\n- `DELETE FROM` — удалить строки\n\nУ `UPDATE` и `DELETE` почти всегда должен быть `WHERE`.',
+              md: '`GROUP BY` собирает строки в группы, а агрегатные функции считают по каждой:\n\n- `COUNT(*)` — сколько строк\n- `SUM(x)` — сумма\n- `AVG(x)` — среднее\n- `MAX(x)` / `MIN(x)`',
             },
             {
               type: 'code',
               lang: 'sql',
-              code: "INSERT INTO users (name, age) VALUES ('Аня', 20);\nUPDATE users SET age = 21 WHERE id = 7;\nDELETE FROM users WHERE id = 7;",
+              code: 'SELECT city, COUNT(*) AS people\nFROM users\nGROUP BY city;',
+            },
+            {
+              type: 'callout',
+              tone: 'info',
+              md: '`AS имя` даёт столбцу читаемое название. Результат: по строке на каждый уникальный город с числом жителей.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Что вернёт `COUNT(*)` с `GROUP BY city`?',
+          options: [
+            'общее число всех пользователей',
+            'число пользователей в каждом городе',
+            'список городов без чисел',
+            'самый населённый город',
+          ],
+          answer: 1,
+          explanation: 'COUNT(*) считает строки внутри каждой группы — по числу на город.',
+        },
+        {
+          kind: 'sql',
+          title: 'Сумма заказов по пользователям',
+          prompt:
+            'Посчитай, на какую сумму заказал каждый пользователь. Выведи `user_id` и сумму цен (`SUM(price)`), сгруппировав заказы по `user_id`.',
+          schema: shopSeed,
+          starter: 'SELECT user_id, SUM(price)\nFROM orders\n...;',
+          solution: 'SELECT user_id, SUM(price) FROM orders GROUP BY user_id;',
+          hints: ['Группировка: GROUP BY user_id', 'Сумма: SUM(price)'],
+        },
+      ],
+    },
+    {
+      id: 'l6-insert',
+      title: 'Добавляем данные',
+      subtitle: 'INSERT',
+      xp: 60,
+      icon: '➕',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Новая строка в таблице',
+          blocks: [
+            {
+              type: 'text',
+              md: '`INSERT INTO таблица (столбцы) VALUES (значения)` добавляет строку. Порядок значений должен совпадать с порядком столбцов.',
+            },
+            {
+              type: 'code',
+              lang: 'sql',
+              code: "INSERT INTO users (id, name, age, city)\nVALUES (6, 'Ева', 25, 'Москва');",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'После запуска мы сами сделаем `SELECT`, чтобы проверить, что новая строка появилась в таблице.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Что идёт после `VALUES`?',
+          options: [
+            'имена столбцов',
+            'значения новой строки в скобках',
+            'условие WHERE',
+            'имя таблицы',
+          ],
+          answer: 1,
+          explanation: 'VALUES (...) перечисляет значения в порядке указанных столбцов.',
+        },
+        {
+          kind: 'sql',
+          title: 'Добавь пользователя',
+          prompt:
+            'Добавь в таблицу `users` нового пользователя: `id` 6, имя `Ева`, возраст `25`, город `Москва`. Проверка сделает SELECT по id = 6.',
+          schema: usersSeed,
+          starter: 'INSERT INTO users (id, name, age, city)\nVALUES (...);',
+          solution: "INSERT INTO users (id, name, age, city) VALUES (6, 'Ева', 25, 'Москва');",
+          verify: 'SELECT name, age, city FROM users WHERE id = 6;',
+          hints: ["VALUES (6, 'Ева', 25, 'Москва')", 'Текст — в одинарных кавычках.'],
+        },
+      ],
+    },
+    {
+      id: 'l7-update',
+      title: 'Изменяем и удаляем',
+      subtitle: 'UPDATE, DELETE',
+      xp: 60,
+      icon: '✏️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Правим существующие строки',
+          blocks: [
+            {
+              type: 'text',
+              md: '- `UPDATE таблица SET столбец = значение WHERE условие` — меняет строки\n- `DELETE FROM таблица WHERE условие` — удаляет строки',
+            },
+            {
+              type: 'code',
+              lang: 'sql',
+              code: 'UPDATE users SET age = 18 WHERE id = 2;\nDELETE FROM users WHERE id = 5;',
             },
             {
               type: 'callout',
               tone: 'warning',
-              md: '`UPDATE users SET age = 21` **без WHERE** изменит ВСЕ строки таблицы. Легендарная ошибка, роняющая продакшены.',
+              md: '**Всегда пиши `WHERE`!** `UPDATE users SET age = 18` без условия изменит ВСЕ строки. Это классическая авария на проде.',
             },
           ],
         },
@@ -296,63 +379,39 @@ export const m8Databases: Module = {
           options: [
             'удалит одну строку',
             'удалит все строки таблицы',
-            'удалит таблицу целиком',
-            'ничего, это ошибка синтаксиса',
+            'ошибка синтаксиса',
+            'ничего',
           ],
           answer: 1,
-          explanation: 'Без условия команда применяется ко всем строкам. Таблица останется, но пустая.',
+          explanation: 'Без WHERE операция применяется ко всем строкам — удалит всё содержимое.',
         },
         {
           kind: 'blank',
-          title: 'Дополни команды',
-          prompt: 'Впиши ключевые слова: добавить пользователя и поднять ему возраст.',
+          title: 'Собери UPDATE',
+          prompt: 'Впиши ключевые слова изменения строки.',
           lang: 'sql',
-          template: "INSERT ___ users (name) VALUES ('Ким');\nUPDATE users ___ age = 16 ___ name = 'Ким';",
-          blanks: [{ answer: 'INTO' }, { answer: 'SET' }, { answer: 'WHERE' }],
-          hints: ['INSERT INTO таблица ...', 'UPDATE таблица SET поле = значение WHERE условие.'],
+          template: 'UPDATE users ___ age = 18 ___ id = 2;',
+          blanks: [{ answer: 'SET' }, { answer: 'WHERE' }],
+          hints: ['Новое значение — SET, выбор строки — WHERE.'],
         },
         {
-          kind: 'code',
-          title: 'UPDATE на JavaScript',
-          lang: 'js',
+          kind: 'sql',
+          title: 'Борису исполнилось 18',
           prompt:
-            'Смоделируем UPDATE. Напиши функцию `updateRow(rows, id, fields)`: верни НОВЫЙ массив, где строка с данным `id` объединена с полями `fields` (spread), остальные не тронуты.',
-          entry: 'updateRow',
-          starter: 'function updateRow(rows, id, fields) {\n  \n}',
-          mustUse: ['...'],
-          tests: [
-            {
-              name: 'обновляем age у id=1',
-              args: [[{ id: 1, name: 'Аня', age: 20 }], 1, { age: 21 }],
-              expected: [{ id: 1, name: 'Аня', age: 21 }],
-            },
-            {
-              name: 'чужие строки не трогаем',
-              args: [
-                [
-                  { id: 1, name: 'Аня' },
-                  { id: 2, name: 'Ким' },
-                ],
-                2,
-                { name: 'Лео' },
-              ],
-              expected: [
-                { id: 1, name: 'Аня' },
-                { id: 2, name: 'Лео' },
-              ],
-            },
-          ],
-          hints: ['rows.map((r) => (r.id === id ? { ...r, ...fields } : r))'],
-          solution:
-            'function updateRow(rows, id, fields) {\n  return rows.map((r) => (r.id === id ? { ...r, ...fields } : r))\n}',
+            'Обнови возраст пользователя с `id = 2` (Борис) на `18`. Не трогай остальных. Проверка сверит возраст Бориса.',
+          schema: usersSeed,
+          starter: 'UPDATE users SET ... WHERE ...;',
+          solution: 'UPDATE users SET age = 18 WHERE id = 2;',
+          verify: 'SELECT name, age FROM users WHERE id = 2;',
+          hints: ['SET age = 18', 'WHERE id = 2'],
         },
       ],
     },
     {
-      id: 'l6-schema',
+      id: 'l8-schema',
       title: 'Проектирование схемы',
       subtitle: 'Ключи и связи',
-      xp: 65,
+      xp: 60,
       icon: '🏛️',
       steps: [
         {
@@ -371,7 +430,7 @@ export const m8Databases: Module = {
             {
               type: 'callout',
               tone: 'tip',
-              md: 'Вопрос с собеседования: где хранить связь? Всегда на стороне «многих»: у заказа один владелец — user_id живёт в orders.',
+              md: 'Вопрос с собеседования: где хранить связь? Всегда на стороне «многих»: у заказа один владелец — `user_id` живёт в orders.',
             },
           ],
         },
@@ -379,7 +438,7 @@ export const m8Databases: Module = {
           kind: 'quiz',
           question: 'У поста в блоге много комментариев. Где хранить связь?',
           options: [
-            'в таблице posts — массив comment_ids',
+            'в таблице posts — массив id комментариев',
             'в таблице comments — поле post_id',
             'в отдельном файле',
             'связь не нужна',
@@ -399,7 +458,7 @@ export const m8Databases: Module = {
             '  post_id INTEGER REFERENCES posts(id)',
             ');',
           ],
-          hints: ['Сначала имя таблицы, потом первичный ключ, поля, внешний ключ, закрывающая скобка.'],
+          hints: ['Имя таблицы → первичный ключ → поля → внешний ключ → закрывающая скобка.'],
         },
         {
           kind: 'quiz',
