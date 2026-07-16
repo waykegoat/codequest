@@ -36,10 +36,14 @@ export interface CodeStep {
   prompt: string
   lang: CodeLang
 
-  entry: string
+  entry?: string
 
   starter: string
-  tests: TestCase[]
+  tests?: TestCase[]
+
+  expectedOutput?: string[]
+
+  mustUse?: string[]
   hints?: string[]
 
   solution?: string

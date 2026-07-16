@@ -2,6 +2,7 @@ export interface RunRequest {
   code: string
   entry: string
   tests: { name: string; args: unknown[]; expected: unknown }[]
+  expectedLogs?: string[]
 }
 
 export interface TestResult {

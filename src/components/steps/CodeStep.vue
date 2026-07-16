@@ -24,12 +24,23 @@ const usedSolution = ref(false)
 const solved = ref(false)
 
 async function run() {
+  const missing = (props.step.mustUse ?? []).filter((m) => !code.value.includes(m))
+  if (missing.length > 0) {
+    outcome.value = {
+      ok: false,
+      allPassed: false,
+      logs: [],
+      compileError: `${t('lesson.mustUse')} ${missing.map((m) => `«${m}»`).join(', ')}`,
+    }
+    return
+  }
   running.value = true
   outcome.value = null
   outcome.value = await runCode({
     code: code.value,
-    entry: props.step.entry,
-    tests: props.step.tests,
+    entry: props.step.entry ?? '',
+    tests: props.step.tests ?? [],
+    expectedLogs: props.step.expectedOutput,
   })
   running.value = false
 
@@ -60,6 +71,15 @@ function toggleSolution() {
   <div class="code">
     <h2>{{ step.title }}</h2>
     <MarkdownBlock :source="step.prompt" class="code__prompt" />
+
+    <div v-if="step.expectedOutput" class="code__expected">
+      <div class="code__expected-label">{{ t('lesson.expectedOutput') }}</div>
+      <pre
+        v-for="(line, i) in step.expectedOutput"
+        :key="i"
+        class="code__expected-line"
+      ><span class="code__expected-arrow">›</span> {{ line }}</pre>
+    </div>
 
     <div class="code__editor card">
       <CodeMirrorEditor v-model="code" :lang="editorLang" />
@@ -142,6 +162,31 @@ function toggleSolution() {
 .code__prompt {
   margin-bottom: var(--sp-4);
   font-size: 1.02rem;
+}
+.code__expected {
+  margin-bottom: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+.code__expected-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.code__expected-line {
+  margin: 0;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.code__expected-arrow {
+  color: var(--text-dim);
 }
 .code__editor {
   height: 300px;

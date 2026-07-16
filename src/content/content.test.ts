@@ -42,12 +42,25 @@ describe('целостность интерактивных шагов', () => {
   })
 })
 
+describe('каждая code-задача проверяема', () => {
+  it('есть либо entry+tests, либо expectedOutput', () => {
+    for (const f of flatLessons) {
+      for (const step of f.lesson.steps) {
+        if (step.kind !== 'code') continue
+        const hasFnTests = Boolean(step.entry) && (step.tests?.length ?? 0) > 0
+        const hasOutput = (step.expectedOutput?.length ?? 0) > 0
+        expect(hasFnTests || hasOutput, `${f.fullId} · ${step.title}`).toBe(true)
+      }
+    }
+  })
+})
+
 describe('аргументы тестов совместимы с воркером (structuredClone)', () => {
   for (const f of flatLessons) {
     for (const step of f.lesson.steps) {
-      if (step.kind !== 'code') continue
+      if (step.kind !== 'code' || !step.tests) continue
       it(`${f.fullId} · ${step.title}`, () => {
-        for (const t of step.tests) {
+        for (const t of step.tests!) {
           expect(() => structuredClone(t.args)).not.toThrow()
           expect(() => structuredClone(t.expected)).not.toThrow()
         }
@@ -68,12 +81,32 @@ describe('корректность код-задач (эталонные реш�
 
   for (const { title, step } of codeSteps) {
     it(title, async () => {
-      const factory = new Function(`"use strict";\n${step.solution}\n;return (${step.entry});`)
-      const fn = factory() as (...args: unknown[]) => unknown
-      expect(typeof fn).toBe('function')
-      for (const t of step.tests) {
-        expect(await fn(...t.args)).toEqual(t.expected)
+      for (const m of step.mustUse ?? []) {
+        expect(step.solution, `решение должно содержать «${m}»`).toContain(m)
       }
+
+      if (step.entry && step.tests) {
+        const factory = new Function(`"use strict";\n${step.solution}\n;return (${step.entry});`)
+        const fn = factory() as (...args: unknown[]) => unknown
+        expect(typeof fn).toBe('function')
+        for (const t of step.tests) {
+          expect(await fn(...t.args)).toEqual(t.expected)
+        }
+        return
+      }
+
+      const logs: string[] = []
+      const fmt = (v: unknown) => (typeof v === 'string' ? v : JSON.stringify(v))
+      const sandboxConsole = {
+        log: (...args: unknown[]) => logs.push(args.map(fmt).join(' ')),
+        info: (...args: unknown[]) => logs.push(args.map(fmt).join(' ')),
+        warn: () => {},
+        error: () => {},
+        debug: () => {},
+      }
+      const run = new Function('console', `"use strict";\n${step.solution}`)
+      await run(sandboxConsole)
+      expect(logs).toEqual(step.expectedOutput)
     })
   }
 })

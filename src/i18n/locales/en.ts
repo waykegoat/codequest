@@ -39,6 +39,8 @@ export default {
     allTestsPassed: 'All tests passed! 🎉',
     someTestsFailed: 'Not all tests are green yet',
     console: 'Console',
+    expectedOutput: 'Expected output',
+    mustUse: 'Your solution must use:',
     tests: 'Tests',
     expected: 'Expected',
     got: 'Got',

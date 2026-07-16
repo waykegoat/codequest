@@ -32,8 +32,26 @@ function deepEqual(a: unknown, b: unknown): boolean {
   )
 }
 
+function outputResults(logs: string[], expectedLogs: string[]): TestResult[] {
+  const results: TestResult[] = expectedLogs.map((line, i) => ({
+    name: `Строка ${i + 1}: ${line}`,
+    passed: logs[i] === line,
+    expected: line,
+    actual: logs[i] ?? '(пусто)',
+  }))
+  if (logs.length > expectedLogs.length) {
+    results.push({
+      name: 'Нет лишних строк вывода',
+      passed: false,
+      expected: `${expectedLogs.length} строк(и)`,
+      actual: `${logs.length} строк(и)`,
+    })
+  }
+  return results
+}
+
 self.onmessage = async (e: MessageEvent<RunRequest>) => {
-  const { code, entry, tests } = e.data
+  const { code, entry, tests, expectedLogs } = e.data
   const logs: string[] = []
   const capture =
     (prefix = '') =>
@@ -53,7 +71,11 @@ self.onmessage = async (e: MessageEvent<RunRequest>) => {
     try {
       const run = new Function('console', `"use strict";\n${code}`)
       await run(sandboxConsole)
-      respond({ ok: true, results: [], logs })
+      respond({
+        ok: true,
+        results: expectedLogs ? outputResults(logs, expectedLogs) : [],
+        logs,
+      })
     } catch (err) {
       respond({
         ok: false,
