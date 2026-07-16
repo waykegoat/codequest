@@ -8,7 +8,7 @@ const router = useRouter()
 const progress = useProgressStore()
 
 const challengeLessons = flatLessons.filter((f) =>
-  f.lesson.steps.some((s) => s.kind === 'code' || s.kind === 'markup'),
+  f.lesson.steps.some((s) => s.kind === 'code' || s.kind === 'markup' || s.kind === 'dom'),
 )
 
 const dayIndex = computed(() => {

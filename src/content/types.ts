@@ -71,6 +71,24 @@ export interface MarkupStep {
   solutionCss?: string
 }
 
+export type DomAction =
+  | { type: 'click'; selector: string }
+  | { type: 'input'; selector: string; value: string }
+
+export interface DomStep {
+  kind: 'dom'
+  title: string
+  prompt: string
+
+  html: string
+  starter: string
+
+  actions?: DomAction[]
+  checks: MarkupCheck[]
+  hints?: string[]
+  solution?: string
+}
+
 export interface BlankStep {
   kind: 'blank'
   title: string
@@ -90,7 +108,14 @@ export interface OrderStep {
   hints?: string[]
 }
 
-export type LessonStep = TheoryStep | QuizStep | CodeStep | MarkupStep | BlankStep | OrderStep
+export type LessonStep =
+  | TheoryStep
+  | QuizStep
+  | CodeStep
+  | MarkupStep
+  | DomStep
+  | BlankStep
+  | OrderStep
 
 export interface Lesson {
   id: string

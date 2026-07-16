@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { course, flatLessons, findLesson, nextLesson } from './index'
-import type { CodeStep } from './types'
+import type { CodeStep, DomStep } from './types'
+import { runDomActions, runMarkupChecks } from '@/engine/markupRunner'
 
 describe('структура курса', () => {
   it('есть модули и уроки', () => {
@@ -66,6 +67,34 @@ describe('аргументы тестов совместимы с воркеро
         }
       })
     }
+  }
+})
+
+describe('корректность DOM-задач (эталонные решения проходят проверки)', () => {
+  const domSteps: { title: string; step: DomStep }[] = []
+  for (const f of flatLessons) {
+    for (const step of f.lesson.steps) {
+      if (step.kind === 'dom' && step.solution) {
+        domSteps.push({ title: `${f.fullId} · ${step.title}`, step })
+      }
+    }
+  }
+
+  for (const { title, step } of domSteps) {
+    it(title, () => {
+      document.body.innerHTML = step.html
+      try {
+        const run = new Function(step.solution as string)
+        run()
+        runDomActions(window as unknown as Window, step.actions)
+        const results = runMarkupChecks(window as unknown as Window, step.checks)
+        for (const r of results) {
+          expect(r.passed, `${r.name}: ${r.detail ?? ''}`).toBe(true)
+        }
+      } finally {
+        document.body.innerHTML = ''
+      }
+    })
   }
 })
 

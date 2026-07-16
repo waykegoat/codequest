@@ -1,4 +1,4 @@
-import type { MarkupCheck } from '@/content/types'
+import type { DomAction, MarkupCheck } from '@/content/types'
 
 export interface MarkupCheckResult {
   name: string
@@ -22,6 +22,49 @@ ${css}
 ${html}
 </body>
 </html>`
+}
+
+export function buildDomSrcdoc(html: string, js: string): string {
+  return `<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: light; }
+  html, body { margin: 0; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; padding: 16px; color: #14151f; }
+</style>
+</head>
+<body>
+${html}
+<script>
+try {
+${js}
+} catch (err) {
+  document.body.setAttribute('data-cq-error', err && err.message ? err.message : String(err))
+}
+</script>
+</body>
+</html>`
+}
+
+export function getDomError(win: Window): string {
+  return win.document.body.getAttribute('data-cq-error') ?? ''
+}
+
+export function runDomActions(win: Window, actions: DomAction[] = []): void {
+  const w = win as unknown as { Event: typeof Event }
+  for (const a of actions) {
+    const node = win.document.querySelector(a.selector)
+    if (!node) continue
+    if (a.type === 'click') {
+      ;(node as HTMLElement).click()
+    } else if (a.type === 'input') {
+      ;(node as HTMLInputElement).value = a.value
+      node.dispatchEvent(new w.Event('input', { bubbles: true }))
+      node.dispatchEvent(new w.Event('change', { bubbles: true }))
+    }
+  }
 }
 
 function resolveStyle(win: Window, prop: string, value: string): string {
