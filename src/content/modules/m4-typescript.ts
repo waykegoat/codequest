@@ -343,5 +343,72 @@ export const m4TypeScript: Module = {
         },
       ],
     },
+    {
+      id: 'l7-literals',
+      title: 'Алиасы и литеральные типы',
+      subtitle: 'type и союзы строк',
+      xp: 55,
+      icon: '🏷️',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Имя для типа и точные значения',
+          blocks: [
+            {
+              type: 'text',
+              md: '`type` даёт имя типу, чтобы не повторяться. А **литеральный тип** ограничивает значение конкретным набором строк — это ловит опечатки на этапе компиляции.',
+            },
+            {
+              type: 'code',
+              lang: 'ts',
+              code: "type Status = 'active' | 'done' | 'archived'\n\nfunction label(s: Status): string {\n  if (s === 'active') return 'В работе'\n  if (s === 'done') return 'Готово'\n  return 'В архиве'\n}\n\nlabel('active')   // ок\nlabel('actve')    // ❌ ошибка компиляции — опечатка",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Так типизируют статусы, роли, размеры кнопок (`\'sm\' | \'md\' | \'lg\'`). Редактор сам подскажет допустимые значения.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: "Что разрешает тип `type Role = 'admin' | 'user'`?",
+          options: [
+            'любую строку',
+            'только строки «admin» или «user»',
+            'массив ролей',
+            'число',
+          ],
+          answer: 1,
+          explanation: 'Литеральный союз ограничивает значение точным набором строк.',
+        },
+        {
+          kind: 'blank',
+          title: 'Объяви тип-союз',
+          prompt: 'Впиши ключевое слово алиаса и разделитель вариантов.',
+          lang: 'ts',
+          template: "___ Size = 'sm' ___ 'md' ___ 'lg'",
+          blanks: [{ answer: 'type' }, { answer: '|' }, { answer: '|' }],
+          hints: ['Алиас типа — type.', 'Варианты объединяют вертикальной чертой |.'],
+        },
+        {
+          kind: 'code',
+          title: 'Переведи статус',
+          lang: 'js',
+          prompt:
+            'Статус задачи — одно из значений `"todo"`, `"doing"`, `"done"` (в TS это был бы литеральный союз). Напиши функцию `statusLabel(s)`: `todo` → `"К выполнению"`, `doing` → `"В работе"`, `done` → `"Готово"`.',
+          entry: 'statusLabel',
+          starter: 'function statusLabel(s) {\n  \n}',
+          tests: [
+            { name: 'todo → К выполнению', args: ['todo'], expected: 'К выполнению' },
+            { name: 'doing → В работе', args: ['doing'], expected: 'В работе' },
+            { name: 'done → Готово', args: ['done'], expected: 'Готово' },
+          ],
+          hints: ['Три ветки if или объект-словарь.', "const map = { todo: 'К выполнению', ... }"],
+          solution:
+            "function statusLabel(s) {\n  const map = { todo: 'К выполнению', doing: 'В работе', done: 'Готово' }\n  return map[s]\n}",
+        },
+      ],
+    },
   ],
 }
