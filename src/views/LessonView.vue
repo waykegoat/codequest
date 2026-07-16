@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { findLesson, lessonKey, nextLesson } from '@/content'
+import { findLesson, lessonKey, nextLesson, prevLesson } from '@/content'
 import { useProgressStore } from '@/stores/progress'
 import { XP_REWARDS } from '@/engine/gamification'
 import TheoryStep from '@/components/steps/TheoryStep.vue'
@@ -97,8 +97,20 @@ function next() {
   }
 }
 
+const previous = computed(() => prevLesson(props.moduleId, props.lessonId))
+
 function prev() {
-  if (currentIndex.value > 0) currentIndex.value--
+  if (currentIndex.value > 0) {
+    currentIndex.value--
+    return
+  }
+  const pv = previous.value
+  if (pv) {
+    router.push({
+      name: 'lesson',
+      params: { moduleId: pv.module.id, lessonId: pv.lesson.id },
+    })
+  }
 }
 
 function finish() {
@@ -231,8 +243,8 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
       <MascotCoach class="lesson__coach" :mood="coach.mood" :message="coach.message" :size="60" compact />
 
       <div class="lesson__foot">
-        <button class="btn" :disabled="currentIndex === 0" @click="prev">
-          ← {{ t('lesson.back') }}
+        <button class="btn" :disabled="currentIndex === 0 && !previous" @click="prev">
+          ← {{ currentIndex === 0 ? t('lesson.prevLesson') : t('lesson.back') }}
         </button>
         <button class="btn btn--primary btn--lg" :disabled="!canProceed" @click="next">
           {{ isLast ? t('lesson.finish') : t('lesson.next') }} →
@@ -251,7 +263,7 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
 .lesson {
   padding-top: var(--sp-6);
   padding-bottom: var(--sp-8);
-  max-width: 820px;
+  max-width: 1040px;
 }
 .lesson__coach {
   margin-top: var(--sp-4);

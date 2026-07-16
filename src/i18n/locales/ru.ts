@@ -48,6 +48,7 @@ export default {
     earnedXp: 'Получено опыта',
     backToMap: 'К карте',
     nextLesson: 'Следующий урок',
+    prevLesson: 'Предыдущий урок',
   },
   profile: {
     title: 'Профиль',

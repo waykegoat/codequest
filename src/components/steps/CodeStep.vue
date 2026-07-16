@@ -189,7 +189,8 @@ function toggleSolution() {
   color: var(--text-dim);
 }
 .code__editor {
-  height: 300px;
+  height: 480px;
+  min-height: 320px;
   overflow: hidden;
   padding: 0;
   resize: vertical;

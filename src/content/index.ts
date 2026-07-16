@@ -84,6 +84,12 @@ export function nextLesson(moduleId: string, lessonId: string): FlatLesson | und
   return flatLessons[cur.index + 1]
 }
 
+export function prevLesson(moduleId: string, lessonId: string): FlatLesson | undefined {
+  const cur = findLesson(moduleId, lessonId)
+  if (!cur || cur.index === 0) return undefined
+  return flatLessons[cur.index - 1]
+}
+
 export const totalLessons = flatLessons.length
 export const totalXpAvailable = flatLessons.reduce((sum, f) => sum + f.lesson.xp, 0)
 

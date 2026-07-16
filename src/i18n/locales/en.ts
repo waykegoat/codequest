@@ -48,6 +48,7 @@ export default {
     earnedXp: 'XP earned',
     backToMap: 'To map',
     nextLesson: 'Next lesson',
+    prevLesson: 'Previous lesson',
   },
   profile: {
     title: 'Profile',

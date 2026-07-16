@@ -197,7 +197,7 @@ onBeforeUnmount(() => clearTimeout(timer))
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--sp-3);
-  min-height: 300px;
+  min-height: 520px;
 }
 .markup__editor,
 .markup__preview {
@@ -230,7 +230,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 .markup__editor-body {
   flex: 1;
-  min-height: 260px;
+  min-height: 460px;
   background: var(--bg-elevated);
 }
 .markup__editor-body :deep(.cm-host) {
@@ -267,7 +267,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 }
 .markup__frame {
   flex: 1;
-  min-height: 260px;
+  min-height: 460px;
   border: none;
   background: #fff;
   width: 100%;

@@ -4,6 +4,7 @@ import { EditorState, Compartment } from '@codemirror/state'
 import { EditorView, keymap, placeholder as cmPlaceholder } from '@codemirror/view'
 import { basicSetup } from 'codemirror'
 import { indentWithTab } from '@codemirror/commands'
+import { acceptCompletion, completeAnyWord } from '@codemirror/autocomplete'
 import { indentUnit } from '@codemirror/language'
 import { cqHighlight, cqTheme, langExtension, type EditorLang } from '@/engine/editorSetup'
 
@@ -20,7 +21,8 @@ const readonlyComp = new Compartment()
 function buildExtensions() {
   return [
     basicSetup,
-    keymap.of([indentWithTab]),
+    keymap.of([{ key: 'Tab', run: acceptCompletion }, indentWithTab]),
+    EditorState.languageData.of(() => [{ autocomplete: completeAnyWord }]),
     indentUnit.of('  '),
     langExtension(props.lang),
     cqTheme,
