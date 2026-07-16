@@ -9,6 +9,95 @@ export const m1JsBasics: Module = {
   icon: '🟡',
   lessons: [
     {
+      id: 'l0-reading',
+      title: 'Что такое код',
+      subtitle: 'Учимся читать программы',
+      xp: 20,
+      icon: '🔡',
+      steps: [
+        {
+          kind: 'theory',
+          title: 'Компьютер понимает буквально',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Код — это инструкция для компьютера, записанная по строгим правилам. Эти правила называются **синтаксисом**. Компьютер не догадывается, что ты имел в виду — он выполняет ровно то, что написано, строка за строкой, сверху вниз.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "console.log('Привет')",
+            },
+            {
+              type: 'text',
+              md: 'Разберём эту строку по кусочкам:\n\n- `console` — объект «консоль» (окно вывода)\n- `.` — точка означает «возьми у него...»\n- `log` — команда «напечатай»\n- `(...)` — круглые скобки передают команде данные\n- `\'Привет\'` — кавычки говорят: это **текст**, а не код',
+            },
+            {
+              type: 'callout',
+              tone: 'warning',
+              md: 'Регистр важен! `console.log` работает, а `Console.Log` — ошибка. Для компьютера это разные слова.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Зачем текст в коде берут в кавычки?',
+          options: [
+            'для красоты',
+            'чтобы компьютер понял: это текст-данные, а не команды',
+            'кавычки не обязательны',
+            'чтобы текст был жирным',
+          ],
+          answer: 1,
+          explanation: 'Без кавычек компьютер попытается выполнить слово как команду и упадёт с ошибкой.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Что случится, если написать `Console.log(\'Привет\')` с большой буквы?',
+          options: [
+            'сработает как обычно',
+            'ошибка: компьютер не знает слова Console',
+            'напечатает ПРИВЕТ заглавными',
+            'ничего не выведет, но не упадёт',
+          ],
+          answer: 1,
+          explanation: 'JS различает регистр: объект называется console, с маленькой буквы.',
+        },
+        {
+          kind: 'theory',
+          title: 'Ошибки — твои друзья',
+          blocks: [
+            {
+              type: 'text',
+              md: 'Ошибка — не провал, а подсказка. Компьютер сообщает, **что** не так и **где**. Частые ошибки новичка:\n\n- `SyntaxError` — нарушены правила записи (забыл кавычку или скобку)\n- `ReferenceError: X is not defined` — использовал слово, которое компьютер не знает (опечатка или забыл кавычки)',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: "console.log(Привет)\n// ReferenceError: Привет is not defined\n// компьютер ищет команду «Привет», а это был текст — нужны кавычки",
+            },
+            {
+              type: 'callout',
+              tone: 'tip',
+              md: 'Увидел ошибку — не паникуй. Прочитай сообщение, найди строку, проверь кавычки, скобки и регистр. 90% ошибок новичка именно там.',
+            },
+          ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Программа упала с ошибкой «Privet is not defined». Что это значит скорее всего?',
+          options: [
+            'сломался компьютер',
+            'слово Privet написано без кавычек, и компьютер ищет такую команду',
+            'нужно перезапустить браузер',
+            'программа слишком длинная',
+          ],
+          answer: 1,
+          explanation: '«Не определено» = компьютер не знает такого имени. Текст нужно взять в кавычки.',
+        },
+      ],
+    },
+    {
       id: 'l1-hello',
       title: 'Твоя первая программа',
       subtitle: 'Команды и вывод',
@@ -71,6 +160,20 @@ export const m1JsBasics: Module = {
           ],
           solution: "console.log('Я')\nconsole.log('учусь')\nconsole.log('кодить')",
         },
+        {
+          kind: 'code',
+          title: 'Почини программу',
+          lang: 'js',
+          prompt:
+            'Эта программа падает с ошибкой `Привет is not defined` — автор забыл кавычки, и компьютер ищет команду «Привет». Почини её, чтобы она вывела `Привет`.',
+          starter: 'console.log(Привет)',
+          expectedOutput: ['Привет'],
+          hints: [
+            'Запусти и прочитай ошибку — это нормальная часть работы.',
+            'Текст берётся в кавычки: console.log(\'Привет\')',
+          ],
+          solution: "console.log('Привет')",
+        },
       ],
     },
     {
@@ -102,7 +205,18 @@ export const m1JsBasics: Module = {
               tone: 'tip',
               md: 'Имя переменной пишется без кавычек. `console.log(city)` напечатает содержимое коробки, а `console.log(\'city\')` — просто слово «city».',
             },
+            {
+              type: 'text',
+              md: '**Правила имён:**\n\n- латинские буквы и цифры: `score`, `user2`\n- не может начинаться с цифры: ~~`2cool`~~\n- без пробелов и дефисов: ~~`user name`~~\n- несколько слов склеивают «верблюдом»: `userName`, `totalPrice`',
+            },
           ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Какое имя переменной написано ПРАВИЛЬНО?',
+          options: ['user name', '2players', 'userName', 'user-name'],
+          answer: 2,
+          explanation: 'camelCase без пробелов и дефисов, не начинается с цифры — userName.',
         },
         {
           kind: 'quiz',
@@ -147,6 +261,19 @@ export const m1JsBasics: Module = {
           hints: ['Новое значение: score = score + 5', 'Потом console.log(score)'],
           solution: 'let score = 10\nscore = score + 5\nconsole.log(score)',
         },
+        {
+          kind: 'code',
+          title: 'Собери фразу из коробок',
+          lang: 'js',
+          prompt:
+            'Даны две переменные. Склей из них фразу `кот говорит мяу` (не забудь пробелы в кавычках) и выведи её.',
+          starter: "const animal = 'кот'\nconst sound = 'мяу'\n",
+          expectedOutput: ['кот говорит мяу'],
+          mustUse: ['animal', 'sound'],
+          hints: ["Пробелы — часть текста: animal + ' говорит ' + sound"],
+          solution:
+            "const animal = 'кот'\nconst sound = 'мяу'\nconsole.log(animal + ' говорит ' + sound)",
+        },
       ],
     },
     {
@@ -174,7 +301,18 @@ export const m1JsBasics: Module = {
               tone: 'warning',
               md: "Осторожно: `'5' + 3` даст `'53'` (склеивание строк), а `5 + 3` даст `8`. Тип имеет значение!",
             },
+            {
+              type: 'text',
+              md: 'Типы можно **преобразовывать**:\n\n- `Number(\'5\')` → число `5`\n- `String(5)` → строка `\'5\'`\n\nЭто спасает, когда число пришло в виде текста (например, из поля ввода).',
+            },
           ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Какой тип у значения `true`?',
+          options: ['string', 'number', 'boolean', 'undefined'],
+          answer: 2,
+          explanation: 'true и false — логический тип boolean.',
         },
         {
           kind: 'quiz',
@@ -202,6 +340,18 @@ export const m1JsBasics: Module = {
           hints: ["console.log(typeof 'привет')", 'console.log(typeof true)'],
           solution: "console.log(typeof 42)\nconsole.log(typeof 'привет')\nconsole.log(typeof true)",
         },
+        {
+          kind: 'code',
+          title: 'Текст в число',
+          lang: 'js',
+          prompt:
+            'В переменной `text` число «застряло» в строке. Преврати его в настоящее число через `Number(...)`, прибавь 5 и выведи результат — должно получиться `10`, а не `55`.',
+          starter: "const text = '5'\n",
+          expectedOutput: ['10'],
+          mustUse: ['Number'],
+          hints: ['console.log(Number(text) + 5)'],
+          solution: "const text = '5'\nconsole.log(Number(text) + 5)",
+        },
       ],
     },
     {
@@ -224,6 +374,10 @@ export const m1JsBasics: Module = {
               lang: 'js',
               code: '7 % 3            // 1 (остаток)\n2 ** 10          // 1024\nMath.round(4.6)  // 5\nMath.max(2, 9, 4) // 9',
             },
+            {
+              type: 'text',
+              md: 'Порядок операций — как в математике: сначала умножение и деление, потом сложение. Скобки меняют порядок: `2 + 3 * 4` = 14, а `(2 + 3) * 4` = 20.',
+            },
           ],
         },
         {
@@ -232,6 +386,13 @@ export const m1JsBasics: Module = {
           options: ['1', '3', '0', '3.33'],
           answer: 0,
           explanation: '10 = 3·3 + 1, остаток равен 1.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Чему равно `2 + 3 * 4`?',
+          options: ['20', '14', '24', '9'],
+          answer: 1,
+          explanation: 'Умножение выполняется первым: 2 + 12 = 14. Хочешь 20 — ставь скобки.',
         },
         {
           kind: 'code',
@@ -245,6 +406,18 @@ export const m1JsBasics: Module = {
           hints: ['Сумма: console.log(a + b)', 'Произведение: a * b, остаток: a % b'],
           solution:
             'const a = 7\nconst b = 3\nconsole.log(a + b)\nconsole.log(a * b)\nconsole.log(a % b)',
+        },
+        {
+          kind: 'code',
+          title: 'Скобки решают',
+          lang: 'js',
+          prompt:
+            'Выведи результат выражения «два плюс три, и всё это умножить на четыре». Должно получиться `20` — без скобок выйдет 14.',
+          starter: 'console.log(2 + 3 * 4)',
+          expectedOutput: ['20'],
+          mustUse: ['('],
+          hints: ['Оберни сложение в скобки: (2 + 3) * 4'],
+          solution: 'console.log((2 + 3) * 4)',
         },
         {
           kind: 'blank',
@@ -304,6 +477,13 @@ export const m1JsBasics: Module = {
           explanation: 'В слове «hello» пять символов.',
         },
         {
+          kind: 'quiz',
+          question: "Что вернёт `'кот'[1]`?",
+          options: ["'к'", "'о'", "'т'", 'ошибку'],
+          answer: 1,
+          explanation: 'Символы нумеруются с нуля: к=0, о=1, т=2.',
+        },
+        {
           kind: 'blank',
           title: 'Шаблонная строка',
           prompt: 'Впиши символ, который подставляет переменную в шаблонную строку.',
@@ -327,6 +507,18 @@ export const m1JsBasics: Module = {
           ],
           solution:
             "const word = 'javascript'\nconsole.log(word.length)\nconsole.log(word.toUpperCase())\nconsole.log(word[0])",
+        },
+        {
+          kind: 'code',
+          title: 'Шаблонная строка',
+          lang: 'js',
+          prompt:
+            'Собери строку `Аня (20)` с помощью шаблонной строки в обратных кавычках — подставь обе переменные через `${...}`.',
+          starter: "const name = 'Аня'\nconst age = 20\n",
+          expectedOutput: ['Аня (20)'],
+          mustUse: ['${'],
+          hints: ['Обратные кавычки: ` `', 'console.log(`${name} (${age})`)'],
+          solution: "const name = 'Аня'\nconst age = 20\nconsole.log(`${name} (${age})`)",
         },
         {
           kind: 'quiz',
@@ -361,6 +553,11 @@ export const m1JsBasics: Module = {
               type: 'text',
               md: 'Логика: `&&` (и), `||` (или), `!` (не). Несколько веток: `if ... else if ... else`.',
             },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'true && true   // true — оба условия выполнены\ntrue && false  // false — «и» требует оба\ntrue || false  // true — «или» хватает одного\n!true          // false — «не» переворачивает',
+            },
           ],
         },
         {
@@ -369,6 +566,22 @@ export const m1JsBasics: Module = {
           options: ['=', '==', '===', '=>'],
           answer: 2,
           explanation: '`===` сравнивает без приведения типов — правильный выбор.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Чему равно `true || false`?',
+          options: ['true', 'false', 'undefined', 'ошибка'],
+          answer: 0,
+          explanation: '«Или» истинно, если истинно хотя бы одно из условий.',
+        },
+        {
+          kind: 'blank',
+          title: 'Вход по двум условиям',
+          prompt: 'На концерт пускают совершеннолетних И только с билетом. Впиши логический оператор.',
+          lang: 'js',
+          template: 'if (age >= 18 ___ hasTicket) {\n  console.log(\'Проходи!\')\n}',
+          blanks: [{ answer: '&&' }],
+          hints: ['Оба условия сразу — это «и»: &&'],
         },
         {
           kind: 'order',
@@ -441,7 +654,28 @@ export const m1JsBasics: Module = {
               tone: 'info',
               md: '`i++` увеличивает `i` на единицу. Забудешь шаг — получишь **бесконечный цикл** (мы прервём его по таймауту).',
             },
+            {
+              type: 'text',
+              md: 'Есть и цикл `while` — «повторяй, пока условие истинно». Его берут, когда число повторений заранее неизвестно.',
+            },
+            {
+              type: 'code',
+              lang: 'js',
+              code: 'let hp = 10\nwhile (hp > 0) {\n  hp = hp - 3\n}',
+            },
           ],
+        },
+        {
+          kind: 'quiz',
+          question: 'Когда `while` уместнее, чем `for`?',
+          options: [
+            'когда повторений ровно 10',
+            'когда заранее неизвестно, сколько раз повторять',
+            'while всегда лучше',
+            'когда нужен счётчик i',
+          ],
+          answer: 1,
+          explanation: 'for — про известное число шагов, while — про «повторяй, пока не готово».',
         },
         {
           kind: 'quiz',
@@ -485,6 +719,21 @@ export const m1JsBasics: Module = {
           ],
           solution:
             'let total = 0\nfor (let i = 1; i <= 10; i++) {\n  total += i\n}\nconsole.log(total)',
+        },
+        {
+          kind: 'code',
+          title: 'Обратный отсчёт',
+          lang: 'js',
+          prompt:
+            'Запусти ракету: выведи `3`, `2`, `1` и затем `Старт!`. Цикл может идти и вниз — уменьшай счётчик через `i--`.',
+          starter: '',
+          expectedOutput: ['3', '2', '1', 'Старт!'],
+          mustUse: ['for'],
+          hints: [
+            'for (let i = 3; i >= 1; i--) { console.log(i) }',
+            "После цикла: console.log('Старт!')",
+          ],
+          solution: "for (let i = 3; i >= 1; i--) {\n  console.log(i)\n}\nconsole.log('Старт!')",
         },
       ],
     },
@@ -530,6 +779,18 @@ export const m1JsBasics: Module = {
           ],
           answer: 1,
           explanation: 'return отдаёт результат наружу и сразу завершает выполнение функции.',
+        },
+        {
+          kind: 'quiz',
+          question: 'Программа объявляет функцию, но нигде её не вызывает. Что выведется?',
+          options: [
+            'результат функции',
+            'ничего — объявление само по себе не выполняется',
+            'ошибка',
+            'undefined',
+          ],
+          answer: 1,
+          explanation: 'Функция — как рецепт: пока не «приготовишь» (не вызовешь), ничего не произойдёт.',
         },
         {
           kind: 'code',
@@ -670,6 +931,19 @@ export const m1JsBasics: Module = {
         },
         {
           kind: 'code',
+          title: 'Пополни корзину',
+          lang: 'js',
+          prompt:
+            'В корзине два фрукта. Добавь `киви` через `push`, затем выведи две строки: количество фруктов и весь список через `join(\', \')`.',
+          starter: "const fruits = ['яблоко', 'банан']\n",
+          expectedOutput: ['3', 'яблоко, банан, киви'],
+          mustUse: ['push'],
+          hints: ["fruits.push('киви')", "console.log(fruits.length) и console.log(fruits.join(', '))"],
+          solution:
+            "const fruits = ['яблоко', 'банан']\nfruits.push('киви')\nconsole.log(fruits.length)\nconsole.log(fruits.join(', '))",
+        },
+        {
+          kind: 'code',
           title: 'Последний элемент',
           lang: 'js',
           prompt:
@@ -749,6 +1023,22 @@ export const m1JsBasics: Module = {
           template: "const user = { name: 'Лео', age: 25 }\nconst text = 'Привет, ' + user.___\nconst years = user.___",
           blanks: [{ answer: 'name' }, { answer: 'age' }],
           hints: ['Обращайся к полям через точку: user.name, user.age'],
+        },
+        {
+          kind: 'code',
+          title: 'Прокачай игрока',
+          lang: 'js',
+          prompt:
+            'Игрок повысил уровень! Увеличь `player.level` на 1 и выведи строку `Байт: 2` (имя, двоеточие с пробелом, новый уровень).',
+          starter: "const player = { name: 'Байт', level: 1 }\n",
+          expectedOutput: ['Байт: 2'],
+          mustUse: ['level'],
+          hints: [
+            'player.level = player.level + 1',
+            "console.log(player.name + ': ' + player.level)",
+          ],
+          solution:
+            "const player = { name: 'Байт', level: 1 }\nplayer.level = player.level + 1\nconsole.log(player.name + ': ' + player.level)",
         },
         {
           kind: 'code',
