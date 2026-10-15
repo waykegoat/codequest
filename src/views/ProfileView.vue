@@ -6,9 +6,11 @@ import { useProgression } from '@/composables/useProgression'
 import { RANKS } from '@/engine/gamification'
 import { course, lessonKey, totalLessons } from '@/content'
 import MascotBot from '@/components/MascotBot.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const progress = useProgressStore()
 const settings = useSettingsStore()
+const auth = useAuthStore()
 const { completedCount, percentDone } = useProgression()
 
 const level = computed(() => progress.level)
@@ -38,15 +40,52 @@ function resetProgress() {
 function printCert() {
   window.print()
 }
+
+function downloadBackup() {
+  const data = progress.exportData()
+  const blob = new Blob([data], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `codequest-progress-${auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : 'guest'}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function handleFileImport(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const content = e.target?.result as string
+    if (content) {
+      const ok = progress.importData(content)
+      if (ok) {
+        alert('Прогресс успешно загружен!')
+      } else {
+        alert('Ошибка при чтении файла резервной копии.')
+      }
+    }
+  }
+  reader.readAsText(file)
+}
 </script>
 
 <template>
   <div class="profile container">
     <div class="profile__id panel-3d">
-      <MascotBot :mood="jobReady ? 'happy' : 'idle'" :size="86" />
+      <div v-if="auth.currentUser" class="profile__user-avatar">{{ auth.currentUser.avatar }}</div>
+      <MascotBot v-else :mood="jobReady ? 'happy' : 'idle'" :size="86" />
       <div class="profile__id-body">
-        <div class="eyebrow">$ whoami</div>
-        <h1 class="profile__rank">{{ progress.rank.title }}</h1>
+        <div class="eyebrow">
+          <span v-if="auth.currentUser">Профиль: {{ auth.currentUser.email }}</span>
+          <span v-else>$ whoami — Гостевой профиль</span>
+        </div>
+        <h1 class="profile__rank">
+          {{ auth.currentUser ? auth.currentUser.displayName : progress.rank.title }}
+          <span v-if="auth.currentUser" class="profile__sub-rank">({{ progress.rank.title }})</span>
+        </h1>
         <div class="profile__level mono">
           level {{ level.level }} · {{ progress.totalXp }} XP
           <template v-if="nextRank"> · next: {{ nextRank.title }} ({{ toNext }} XP)</template>
@@ -54,6 +93,17 @@ function printCert() {
         <div class="profile__bar">
           <div class="profile__fill" :style="{ width: level.progress * 100 + '%' }" />
         </div>
+      </div>
+      <div class="profile__auth-actions">
+        <button v-if="auth.currentUser" class="btn btn--sm" @click="auth.openAuthModal('login')">
+          Сменить
+        </button>
+        <button v-if="auth.currentUser" class="btn btn--sm btn--ghost" @click="auth.logout">
+          Выйти
+        </button>
+        <button v-else class="btn btn--primary btn--sm" @click="auth.openAuthModal('login')">
+          👤 Войти
+        </button>
       </div>
     </div>
 
@@ -127,6 +177,53 @@ function printCert() {
         <div class="ladder__lvl mono">lvl {{ r.minLevel }}</div>
       </div>
     </div>
+
+    <!-- Резервное копирование и синхронизация -->
+    <section class="card profile__box">
+      <div class="profile__box-head">
+        <h2 class="profile__box-title">💾 Резервная копия прогресса</h2>
+        <span class="mono profile__box-sub">Экспорт и перенос</span>
+      </div>
+      <p class="profile__box-desc">
+        Сохрани свой прогресс (XP, решённые задачи, пройденные уроки) в файл .json, чтобы перенести его на другой браузер или компьютер.
+      </p>
+      <div class="profile__backup-actions">
+        <button class="btn btn--primary btn--sm" @click="downloadBackup">
+          ⬇ Скачать прогресс (.json)
+        </button>
+        <label class="btn btn--ghost btn--sm profile__upload-label">
+          ⬆ Загрузить из файла
+          <input type="file" accept=".json" class="visually-hidden" @change="handleFileImport" />
+        </label>
+      </div>
+    </section>
+
+    <!-- Настройки ИИ-наставника -->
+    <section class="card profile__box">
+      <div class="profile__box-head">
+        <h2 class="profile__box-title">🤖 ИИ-наставник «Байт»</h2>
+        <span class="mono profile__box-sub">Разбор ошибок без спойлеров</span>
+      </div>
+      <div class="profile__ai-settings">
+        <div class="form-group">
+          <label class="form-label">Источник подсказок:</label>
+          <select v-model="settings.aiProvider" class="form-input profile__select">
+            <option value="pollinations">Бесплатный ИИ (Pollinations AI, без ключа)</option>
+            <option value="gemini">Google Gemini Flash (бесплатный API-ключ)</option>
+            <option value="offline">Автономный Байт (без интернета, локальные эвристики)</option>
+          </select>
+        </div>
+        <div v-if="settings.aiProvider === 'gemini'" class="form-group">
+          <label class="form-label">Google Gemini API Key:</label>
+          <input
+            v-model="settings.geminiApiKey"
+            type="password"
+            placeholder="AIzaSy..."
+            class="form-input"
+          />
+        </div>
+      </div>
+    </section>
 
     <div class="settings">
       <button class="btn" @click="settings.toggleTheme">
@@ -340,10 +437,90 @@ function printCert() {
   display: flex;
   gap: var(--sp-3);
   flex-wrap: wrap;
+  margin-top: var(--sp-4);
 }
 .profile__reset {
   color: var(--text-muted);
   border-color: var(--bad-line);
+}
+
+.profile__user-avatar {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.profile__sub-rank {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.profile__auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile__box {
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+.profile__box-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-2);
+}
+
+.profile__box-title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.profile__box-sub {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.profile__box-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--sp-4);
+}
+
+.profile__backup-actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.profile__upload-label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.profile__ai-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.profile__select {
+  cursor: pointer;
 }
 
 @media (max-width: 720px) {

@@ -6,6 +6,7 @@ import { getSql } from '@/engine/sqlEngine'
 import { runSql, type SqlOutcome } from '@/engine/sqlRunner'
 import CodeMirrorEditor from '@/components/CodeMirrorEditor.vue'
 import MarkdownBlock from '@/components/MarkdownBlock.vue'
+import ErrorHint from '@/components/ErrorHint.vue'
 
 const props = defineProps<{ step: SqlStep }>()
 const emit = defineEmits<{ solved: [firstTry: boolean] }>()
@@ -150,6 +151,14 @@ function toggleSolution() {
           </table>
         </div>
       </template>
+
+      <ErrorHint
+        v-if="outcome.error || !outcome.passed"
+        :code="query"
+        :prompt="step.prompt"
+        lang="sql"
+        :compile-error="outcome.error"
+      />
     </div>
   </div>
 </template>

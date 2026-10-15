@@ -7,9 +7,10 @@ import { useProgression } from '@/composables/useProgression'
 const props = defineProps<{ flat: FlatLesson }>()
 
 const router = useRouter()
-const { isCompleted, isUnlocked } = useProgression()
+const { isCompleted, isSkipped, isUnlocked } = useProgression()
 
 const completed = computed(() => isCompleted(props.flat))
+const skipped = computed(() => isSkipped(props.flat))
 const unlocked = computed(() => isUnlocked(props.flat))
 
 const kinds = computed(() => {
@@ -29,12 +30,13 @@ function open() {
 <template>
   <button
     class="node"
-    :class="{ 'node--done': completed, 'node--locked': !unlocked }"
+    :class="{ 'node--done': completed, 'node--skipped': !completed && skipped, 'node--locked': !unlocked }"
     :disabled="!unlocked"
     @click="open"
   >
     <span class="node__badge">
       <span v-if="completed" class="node__check">✓</span>
+      <span v-else-if="skipped" class="node__skip" title="Урок пропущен">⏩</span>
       <span v-else-if="!unlocked" class="node__lock">🔒</span>
       <span v-else class="node__icon">{{ flat.lesson.icon }}</span>
     </span>
@@ -91,6 +93,17 @@ function open() {
 .node--done .node__badge {
   background: var(--ink);
   border-color: var(--ink);
+}
+.node--skipped {
+  opacity: 0.85;
+  border-style: dashed;
+}
+.node--skipped .node__badge {
+  background: var(--surface-3);
+  border-color: var(--warning);
+}
+.node__skip {
+  font-size: 0.95rem;
 }
 .node__check {
   font-weight: 900;

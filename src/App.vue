@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import ToastStack from '@/components/ToastStack.vue'
+import AuthModal from '@/components/AuthModal.vue'
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import ToastStack from '@/components/ToastStack.vue'
     </RouterView>
   </main>
   <ToastStack />
+  <AuthModal />
 </template>
 
 <style scoped>

@@ -8,6 +8,7 @@ import { router } from './router'
 import { i18n } from './i18n'
 import { useSettingsStore } from './stores/settings'
 import { useProgressStore } from './stores/progress'
+import { useAuthStore } from './stores/auth'
 import { vTilt } from './directives/tilt'
 
 const app = createApp(App)
@@ -23,5 +24,6 @@ settings.applyTheme()
 i18n.global.locale.value = settings.locale
 
 useProgressStore().recordActivity()
+useAuthStore().initAuth()
 
 app.mount('#app')

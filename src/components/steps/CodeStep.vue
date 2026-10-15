@@ -7,6 +7,7 @@ import type { RunOutcome } from '@/engine/runnerTypes'
 import type { EditorLang } from '@/engine/editorSetup'
 import CodeMirrorEditor from '@/components/CodeMirrorEditor.vue'
 import MarkdownBlock from '@/components/MarkdownBlock.vue'
+import ErrorHint from '@/components/ErrorHint.vue'
 
 const props = defineProps<{ step: CodeStep }>()
 const emit = defineEmits<{ solved: [firstTry: boolean] }>()
@@ -146,6 +147,16 @@ function toggleSolution() {
           </div>
         </div>
       </template>
+
+      <ErrorHint
+        v-if="outcome.compileError || !outcome.allPassed"
+        :code="code"
+        :prompt="step.prompt"
+        :lang="step.lang"
+        :compile-error="outcome.compileError"
+        :logs="outcome.logs"
+        :failed-tests="outcome.results?.filter((r) => !r.passed)"
+      />
 
       <div v-if="outcome.logs && outcome.logs.length" class="results__console">
         <div class="results__console-label">{{ t('lesson.console') }}</div>

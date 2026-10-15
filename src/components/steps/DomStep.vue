@@ -11,6 +11,7 @@ import {
 } from '@/engine/markupRunner'
 import CodeMirrorEditor from '@/components/CodeMirrorEditor.vue'
 import MarkdownBlock from '@/components/MarkdownBlock.vue'
+import ErrorHint from '@/components/ErrorHint.vue'
 
 const props = defineProps<{ step: DomStep }>()
 const emit = defineEmits<{ solved: [firstTry: boolean] }>()
@@ -161,6 +162,15 @@ onBeforeUnmount(() => clearTimeout(timer))
         </div>
       </div>
     </div>
+
+    <ErrorHint
+      v-if="runtimeError || (results.length > 0 && !results.every((r) => r.passed))"
+      :code="jsCode"
+      :prompt="step.prompt"
+      lang="js"
+      :runtime-error="runtimeError"
+      :failed-tests="results.filter((r) => !r.passed).map((r) => ({ name: r.name, error: r.detail }))"
+    />
   </div>
 </template>
 

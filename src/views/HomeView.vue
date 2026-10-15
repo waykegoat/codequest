@@ -11,7 +11,8 @@ import DailyChallenge from '@/components/DailyChallenge.vue'
 
 const router = useRouter()
 const progress = useProgressStore()
-const { percentDone, completedCount, currentLesson, hasStarted } = useProgression()
+const { percentDone, completedCount, currentLesson, hasStarted, skip5LessonsAhead } =
+  useProgression()
 const { px, py } = useParallax()
 
 const greeting = computed(() =>
@@ -98,6 +99,13 @@ function showMonthDivider(i: number) {
           <div class="hero__actions">
             <button class="btn btn--primary btn--lg" @click="continueJourney">
               {{ hasStarted ? '▸ Продолжить' : '▸ Начать путь' }}
+            </button>
+            <button
+              class="btn btn--lg btn--ghost hero__skip-btn"
+              title="Открыть следующие 5 уроков для пропуска"
+              @click="skip5LessonsAhead"
+            >
+              ⏩ Вперёд на 5 уроков
             </button>
             <RouterLink to="/playground" class="btn btn--lg">⌨ Песочница</RouterLink>
           </div>

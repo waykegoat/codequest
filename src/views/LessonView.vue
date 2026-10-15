@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { findLesson, lessonKey, nextLesson, prevLesson } from '@/content'
+import { findLesson, flatLessons, lessonKey, nextLesson, prevLesson } from '@/content'
 import { useProgressStore } from '@/stores/progress'
 import { XP_REWARDS } from '@/engine/gamification'
 import TheoryStep from '@/components/steps/TheoryStep.vue'
@@ -139,6 +139,31 @@ function goNext() {
   }
 }
 
+function skipCurrentStep() {
+  progress.skipStep(fullId.value, currentIndex.value)
+  stepSolved.value = true
+}
+
+function skipCurrentLesson() {
+  progress.skipLesson(fullId.value)
+  goNext()
+}
+
+function jump5Ahead() {
+  const currentIdx = flat.value?.index ?? 0
+  const targetIdx = Math.min(flatLessons.length - 1, currentIdx + 5)
+  progress.jumpForward(5)
+  const target = flatLessons[targetIdx]
+  if (target) {
+    router.push({
+      name: 'lesson',
+      params: { moduleId: target.module.id, lessonId: target.lesson.id },
+    })
+  } else {
+    router.push('/')
+  }
+}
+
 function stepDotClass(i: number) {
   return {
     'dot--done': progress.isStepComplete(fullId.value, i),
@@ -266,6 +291,32 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
         <button class="btn" :disabled="currentIndex === 0 && !previous" @click="prev">
           ← {{ currentIndex === 0 ? t('lesson.prevLesson') : t('lesson.back') }}
         </button>
+
+        <div class="lesson__skips">
+          <button
+            v-if="!canProceed"
+            class="btn btn--ghost btn--sm"
+            title="Пропустить этот шаг"
+            @click="skipCurrentStep"
+          >
+            ⏩ Пропустить шаг
+          </button>
+          <button
+            class="btn btn--ghost btn--sm"
+            title="Пропустить этот урок и перейти к следующему"
+            @click="skipCurrentLesson"
+          >
+            ⏩ Пропустить урок
+          </button>
+          <button
+            class="btn btn--ghost btn--sm"
+            title="Перейти на 5 уроков вперёд"
+            @click="jump5Ahead"
+          >
+            ⏩ +5 уроков
+          </button>
+        </div>
+
         <button class="btn btn--primary btn--lg" :disabled="!canProceed" @click="next">
           {{ isLast ? t('lesson.finish') : t('lesson.next') }} →
         </button>
@@ -356,7 +407,16 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
 .lesson__foot {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
   margin-top: var(--sp-4);
+}
+.lesson__skips {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .done {

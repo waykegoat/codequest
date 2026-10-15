@@ -2,11 +2,13 @@
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
+import { useAuthStore } from '@/stores/auth'
 import XpBar from './XpBar.vue'
 import StreakBadge from './StreakBadge.vue'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
+const auth = useAuthStore()
 </script>
 
 <template>
@@ -22,6 +24,7 @@ const settings = useSettingsStore()
         <RouterLink to="/playground" class="hd__link">Песочница</RouterLink>
         <RouterLink to="/achievements" class="hd__link">{{ t('nav.achievements') }}</RouterLink>
         <RouterLink to="/profile" class="hd__link">{{ t('nav.profile') }}</RouterLink>
+        <RouterLink to="/admin" class="hd__link hd__link--admin" title="Панель администратора">🛡️ Админка</RouterLink>
       </nav>
 
       <div class="hd__stats">
@@ -29,6 +32,23 @@ const settings = useSettingsStore()
         <XpBar />
         <button class="hd__theme btn btn--ghost" @click="settings.toggleTheme" title="Мазо мод">
           {{ settings.theme === 'dark' ? '◐' : '◑' }}
+        </button>
+
+        <RouterLink
+          v-if="auth.currentUser"
+          to="/profile"
+          class="hd__user-pill"
+          :title="`Профиль: ${auth.currentUser.displayName}`"
+        >
+          <span class="hd__user-avatar">{{ auth.currentUser.avatar }}</span>
+          <span class="hd__user-name">{{ auth.currentUser.displayName }}</span>
+        </RouterLink>
+        <button
+          v-else
+          class="btn btn--sm btn--primary hd__login-btn"
+          @click="auth.openAuthModal('login')"
+        >
+          👤 Войти
         </button>
       </div>
     </div>
@@ -106,6 +126,36 @@ const settings = useSettingsStore()
 .hd__theme {
   padding: 6px 10px;
   font-size: 1rem;
+}
+.hd__user-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: all var(--dur-fast) var(--ease);
+}
+.hd__user-pill:hover {
+  background: var(--surface-3);
+  border-color: var(--accent);
+}
+.hd__user-avatar {
+  font-size: 1.1rem;
+}
+.hd__user-name {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hd__login-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
 }
 @media (max-width: 820px) {
   .hd__nav {

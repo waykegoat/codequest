@@ -2,8 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, reactive, ref, watch } from 'vue'
 import { levelFromXp, rankForLevel, XP_REWARDS, badgeById } from '@/engine/gamification'
 import { course, lessonKey } from '@/content'
-
-const STORAGE_KEY = 'codequest:progress:v1'
+import { queueCloudSync } from '@/services/cloudProgressService'
 
 function todayStr(d = new Date()): string {
   const y = d.getFullYear()
@@ -18,7 +17,7 @@ function daysBetween(a: string, b: string): number {
   return Math.round((db.getTime() - da.getTime()) / 86_400_000)
 }
 
-interface PersistShape {
+export interface PersistShape {
   totalXp: number
   completedLessons: string[]
   completedSteps: string[]
@@ -28,11 +27,28 @@ interface PersistShape {
   streakLongest: number
   lastActiveDate: string | null
   streakFreezes: number
+  maxUnlockedIndex?: number
+  skippedLessons?: string[]
 }
 
-function load(): PersistShape | null {
+function getStorageKey(userId?: string | null): string {
+  return userId ? `codequest:progress:${userId}` : 'codequest:progress:guest'
+}
+
+function load(userId?: string | null): PersistShape | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const key = getStorageKey(userId)
+    let raw = localStorage.getItem(key)
+    // Legacy migration: if key is guest and nothing found, check legacy codequest:progress:v1
+    if (!raw && !userId) {
+      const legacy = localStorage.getItem('codequest:progress:v1')
+      if (legacy) {
+        raw = legacy
+        try {
+          localStorage.setItem(key, legacy)
+        } catch {}
+      }
+    }
     return raw ? (JSON.parse(raw) as PersistShape) : null
   } catch {
     return null
@@ -40,7 +56,13 @@ function load(): PersistShape | null {
 }
 
 export const useProgressStore = defineStore('progress', () => {
-  const saved = load()
+  const activeUserId = ref<string | null>(
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem('codequest:current_user_id:v1')
+      : null,
+  )
+
+  const saved = load(activeUserId.value)
 
   const totalXp = ref(saved?.totalXp ?? 0)
   const completedLessons = reactive(new Set<string>(saved?.completedLessons ?? []))
@@ -51,6 +73,8 @@ export const useProgressStore = defineStore('progress', () => {
   const streakLongest = ref(saved?.streakLongest ?? 0)
   const lastActiveDate = ref<string | null>(saved?.lastActiveDate ?? null)
   const streakFreezes = ref(saved?.streakFreezes ?? 0)
+  const maxUnlockedIndex = ref<number>(saved?.maxUnlockedIndex ?? 0)
+  const skippedLessons = reactive(new Set<string>(saved?.skippedLessons ?? []))
 
   const toasts = ref<{ id: number; type: 'xp' | 'badge' | 'level'; text: string; icon: string }[]>(
     [],
@@ -72,6 +96,7 @@ export const useProgressStore = defineStore('progress', () => {
   }
 
   const isLessonComplete = (lessonId: string) => completedLessons.has(lessonId)
+  const isLessonSkipped = (lessonId: string) => skippedLessons.has(lessonId)
   const isStepComplete = (lessonId: string, stepIndex: number) =>
     completedSteps.has(stepKey(lessonId, stepIndex))
   const hasBadge = (id: string) => earnedBadges.has(id)
@@ -126,6 +151,14 @@ export const useProgressStore = defineStore('progress', () => {
     return true
   }
 
+  function skipStep(lessonId: string, stepIndex: number) {
+    const key = stepKey(lessonId, stepIndex)
+    if (!completedSteps.has(key)) {
+      completedSteps.add(key)
+    }
+    pushToast('xp', 'Шаг пропущен', '⏩')
+  }
+
   function markCodeSolved() {
     solvedCode.value += 1
   }
@@ -133,8 +166,23 @@ export const useProgressStore = defineStore('progress', () => {
   function completeLesson(lessonId: string, xp: number) {
     if (completedLessons.has(lessonId)) return false
     completedLessons.add(lessonId)
+    skippedLessons.delete(lessonId)
     addXp(xp)
     return true
+  }
+
+  function skipLesson(lessonId: string) {
+    if (!completedLessons.has(lessonId)) {
+      skippedLessons.add(lessonId)
+      pushToast('xp', 'Урок пропущен', '⏩')
+      return true
+    }
+    return false
+  }
+
+  function jumpForward(count = 5) {
+    maxUnlockedIndex.value += count
+    pushToast('xp', `Открыто +${count} уроков вперёд`, '⏩')
   }
 
   function checkAchievements() {
@@ -171,6 +219,39 @@ export const useProgressStore = defineStore('progress', () => {
     streakLongest.value = 0
     lastActiveDate.value = null
     streakFreezes.value = 0
+    maxUnlockedIndex.value = 0
+    skippedLessons.clear()
+  }
+
+  function saveCurrent() {
+    try {
+      const key = getStorageKey(activeUserId.value)
+      localStorage.setItem(key, JSON.stringify(snapshot()))
+      if (!activeUserId.value) {
+        localStorage.setItem('codequest:progress:v1', JSON.stringify(snapshot()))
+      }
+    } catch {}
+  }
+
+  function switchUser(newUserId: string | null) {
+    saveCurrent()
+    activeUserId.value = newUserId
+    const data = load(newUserId)
+    totalXp.value = data?.totalXp ?? 0
+    completedLessons.clear()
+    data?.completedLessons?.forEach((l) => completedLessons.add(l))
+    completedSteps.clear()
+    data?.completedSteps?.forEach((s) => completedSteps.add(s))
+    earnedBadges.clear()
+    data?.earnedBadges?.forEach((b) => earnedBadges.add(b))
+    solvedCode.value = data?.solvedCode ?? 0
+    streakCurrent.value = data?.streakCurrent ?? 0
+    streakLongest.value = data?.streakLongest ?? 0
+    lastActiveDate.value = data?.lastActiveDate ?? null
+    streakFreezes.value = data?.streakFreezes ?? 0
+    maxUnlockedIndex.value = data?.maxUnlockedIndex ?? 0
+    skippedLessons.clear()
+    data?.skippedLessons?.forEach((s) => skippedLessons.add(s))
   }
 
   function snapshot(): PersistShape {
@@ -184,6 +265,37 @@ export const useProgressStore = defineStore('progress', () => {
       streakLongest: streakLongest.value,
       lastActiveDate: lastActiveDate.value,
       streakFreezes: streakFreezes.value,
+      maxUnlockedIndex: maxUnlockedIndex.value,
+      skippedLessons: [...skippedLessons],
+    }
+  }
+
+  function exportData(): string {
+    return JSON.stringify(snapshot(), null, 2)
+  }
+
+  function importData(rawOrJson: string | PersistShape): boolean {
+    try {
+      const snap: PersistShape =
+        typeof rawOrJson === 'string' ? JSON.parse(rawOrJson) : rawOrJson
+      totalXp.value = snap.totalXp ?? 0
+      completedLessons.clear()
+      snap.completedLessons?.forEach((l) => completedLessons.add(l))
+      completedSteps.clear()
+      snap.completedSteps?.forEach((s) => completedSteps.add(s))
+      earnedBadges.clear()
+      snap.earnedBadges?.forEach((b) => earnedBadges.add(b))
+      solvedCode.value = snap.solvedCode ?? 0
+      streakCurrent.value = snap.streakCurrent ?? 0
+      streakLongest.value = snap.streakLongest ?? 0
+      lastActiveDate.value = snap.lastActiveDate ?? null
+      streakFreezes.value = snap.streakFreezes ?? 0
+      maxUnlockedIndex.value = snap.maxUnlockedIndex ?? 0
+      skippedLessons.clear()
+      snap.skippedLessons?.forEach((s) => skippedLessons.add(s))
+      return true
+    } catch {
+      return false
     }
   }
 
@@ -191,13 +303,22 @@ export const useProgressStore = defineStore('progress', () => {
     () => snapshot(),
     (snap) => {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(snap))
+        const key = getStorageKey(activeUserId.value)
+        localStorage.setItem(key, JSON.stringify(snap))
+        if (!activeUserId.value) {
+          localStorage.setItem('codequest:progress:v1', JSON.stringify(snap))
+        }
       } catch {}
+
+      if (activeUserId.value) {
+        queueCloudSync(activeUserId.value, snap)
+      }
     },
     { deep: true },
   )
 
   return {
+    activeUserId,
     totalXp,
     completedLessons,
     completedSteps,
@@ -207,19 +328,29 @@ export const useProgressStore = defineStore('progress', () => {
     streakLongest,
     lastActiveDate,
     streakFreezes,
+    maxUnlockedIndex,
+    skippedLessons,
     toasts,
     level,
     rank,
     isLessonComplete,
+    isLessonSkipped,
     isStepComplete,
     hasBadge,
     addXp,
     awardBadge,
     recordActivity,
     markStepComplete,
+    skipStep,
     markCodeSolved,
     completeLesson,
+    skipLesson,
+    jumpForward,
     checkAchievements,
     reset,
+    switchUser,
+    exportData,
+    importData,
+    snapshot,
   }
 })
