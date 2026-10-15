@@ -1,8 +1,16 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import AppHeader from '@/components/AppHeader.vue'
 import ToastStack from '@/components/ToastStack.vue'
 import AuthModal from '@/components/AuthModal.vue'
+
+const auth = useAuthStore()
+
+onMounted(() => {
+  auth.initAuth()
+})
 </script>
 
 <template>

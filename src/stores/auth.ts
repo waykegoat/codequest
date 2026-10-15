@@ -60,6 +60,9 @@ export function translateAuthError(message: string): string {
   if (m.includes('rate limit')) {
     return 'Превышен лимит отправки писем Supabase (3 письма в час). Если вы уже регистрировались — перейдите во вкладку «Вход». Чтобы убрать этот лимит для всех пользователей, отключите «Confirm email» в панели Supabase.'
   }
+  if (m.includes('email logins are disabled') || m.includes('logins are disabled')) {
+    return 'Вход по Email отключен в Supabase. Откройте Supabase Dashboard → Authentication → Providers → Email: включите верхний переключатель «Enable Email provider» (ON), а внутри отключите только «Confirm email» (OFF).'
+  }
   if (m.includes('invalid login credentials') || m.includes('invalid credentials')) {
     return 'Неверный email или пароль'
   }
@@ -85,8 +88,9 @@ export const useAuthStore = defineStore('auth', () => {
   )
   const cloudUser = ref<UserAccount | null>(null)
   const authModalOpen = ref(false)
-  const authModalTab = ref<'login' | 'register' | 'cloud'>('login')
+  const authModalTab = ref<'login' | 'register' | 'cloud'>('register')
   const cloudActive = ref(isCloudConfigured())
+  const requireAuth = ref(true)
 
   let initialized = false
 
@@ -125,12 +129,21 @@ export const useAuthStore = defineStore('auth', () => {
 
     cloudActive.value = isCloudConfigured()
     const supabase = getSupabaseClient()
-    if (!supabase) return
+    if (!supabase) {
+      if (requireAuth.value && !currentUser.value) {
+        authModalOpen.value = true
+        authModalTab.value = 'register'
+      }
+      return
+    }
 
     try {
       const { data } = await supabase.auth.getSession()
       if (data?.session?.user) {
         await handleSupabaseSession(data.session.user)
+      } else if (requireAuth.value && !currentUser.value) {
+        authModalOpen.value = true
+        authModalTab.value = 'register'
       }
 
       supabase.auth.onAuthStateChange(async (event, session) => {
@@ -141,10 +154,18 @@ export const useAuthStore = defineStore('auth', () => {
           currentUserId.value = null
           const progress = useProgressStore()
           progress.switchUser(null)
+          if (requireAuth.value) {
+            authModalOpen.value = true
+            authModalTab.value = 'login'
+          }
         }
       })
     } catch (err) {
       console.warn('Ошибка при проверке онлайн-сессии Supabase:', err)
+      if (requireAuth.value && !currentUser.value) {
+        authModalOpen.value = true
+        authModalTab.value = 'register'
+      }
     }
   }
 
@@ -373,6 +394,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function closeAuthModal() {
+    if (requireAuth.value && !currentUser.value) {
+      return
+    }
     authModalOpen.value = false
   }
 
@@ -383,6 +407,7 @@ export const useAuthStore = defineStore('auth', () => {
     isGuest,
     isCloud,
     cloudActive,
+    requireAuth,
     authModalOpen,
     authModalTab,
     initAuth,

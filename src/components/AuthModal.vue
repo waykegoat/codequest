@@ -106,23 +106,32 @@ async function handleRegister() {
   }
 }
 
-function continueAsGuest() {
-  auth.logout()
-  progress.switchUser(null)
+function onBackdropClick() {
+  if (auth.requireAuth && !auth.currentUser) return
   auth.closeAuthModal()
 }
 </script>
 
 <template>
-  <div v-if="auth.authModalOpen" class="auth-modal" @click.self="auth.closeAuthModal">
+  <div v-if="auth.authModalOpen" class="auth-modal" @click.self="onBackdropClick">
     <div class="auth-modal__dialog card">
-      <button class="auth-modal__close btn btn--ghost btn--xs" @click="auth.closeAuthModal">✕</button>
+      <button
+        v-if="!auth.requireAuth || auth.currentUser"
+        class="auth-modal__close btn btn--ghost btn--xs"
+        @click="auth.closeAuthModal"
+      >
+        ✕
+      </button>
 
       <div class="auth-modal__header">
         <div class="auth-modal__icon">☁️</div>
         <h2 class="auth-modal__title">CodeQuest ID</h2>
         <p class="auth-modal__sub">
-          Онлайн-профиль: сохраняй прогресс и заходи с любого устройства (ПК, планшет, телефон).
+          {{
+            auth.requireAuth && !auth.currentUser
+              ? 'Обязательная авторизация: войдите или создайте аккаунт для сохранения прогресса в облаке.'
+              : 'Онлайн-профиль: сохраняй прогресс и заходи с любого устройства (ПК, планшет, телефон).'
+          }}
         </p>
       </div>
 
@@ -273,8 +282,8 @@ function continueAsGuest() {
         </div>
       </form>
 
-      <div class="auth-modal__footer">
-        <button class="btn btn--ghost btn--sm" @click="continueAsGuest">
+      <div v-if="!auth.requireAuth || auth.currentUser" class="auth-modal__footer">
+        <button class="btn btn--ghost btn--sm" @click="auth.closeAuthModal">
           Продолжить как гость (офлайн)
         </button>
       </div>
