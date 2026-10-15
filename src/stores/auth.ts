@@ -55,6 +55,29 @@ function loadLocalAccounts(): UserAccount[] {
   }
 }
 
+export function translateAuthError(message: string): string {
+  const m = message.toLowerCase()
+  if (m.includes('rate limit')) {
+    return 'Превышен лимит отправки писем Supabase (3 письма в час). Если вы уже регистрировались — перейдите во вкладку «Вход». Чтобы убрать этот лимит для всех пользователей, отключите «Confirm email» в панели Supabase.'
+  }
+  if (m.includes('invalid login credentials') || m.includes('invalid credentials')) {
+    return 'Неверный email или пароль'
+  }
+  if (m.includes('already registered') || m.includes('already exists') || m.includes('user already exists')) {
+    return 'Пользователь с таким email уже существует. Пожалуйста, перейдите во вкладку «Вход».'
+  }
+  if (m.includes('email not confirmed')) {
+    return 'Email ещё не подтверждён. Проверьте почтовый ящик или отключите «Confirm email» в панели Supabase.'
+  }
+  if (m.includes('password should be at least')) {
+    return 'Пароль должен содержать не менее 6 символов'
+  }
+  if (m.includes('network') || m.includes('failed to fetch')) {
+    return 'Ошибка соединения с сервером. Проверьте интернет-подключение.'
+  }
+  return message
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const localAccounts = ref<UserAccount[]>(loadLocalAccounts())
   const currentUserId = ref<string | null>(
@@ -189,10 +212,48 @@ export const useAuthStore = defineStore('auth', () => {
         })
 
         if (error) {
-          return { ok: false, error: error.message }
+          const errLower = error.message.toLowerCase()
+          if (
+            errLower.includes('rate limit') ||
+            errLower.includes('already registered') ||
+            errLower.includes('already exists')
+          ) {
+            try {
+              const loginAttempt = await supabase.auth.signInWithPassword({
+                email,
+                password: params.password,
+              })
+              if (!loginAttempt.error && loginAttempt.data.user) {
+                await handleSupabaseSession(loginAttempt.data.user)
+                authModalOpen.value = false
+                return { ok: true }
+              }
+            } catch {}
+          }
+
+          return { ok: false, error: translateAuthError(error.message) }
         }
 
         if (data.user) {
+          if (Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            try {
+              const loginAttempt = await supabase.auth.signInWithPassword({
+                email,
+                password: params.password,
+              })
+              if (!loginAttempt.error && loginAttempt.data.user) {
+                await handleSupabaseSession(loginAttempt.data.user)
+                authModalOpen.value = false
+                return { ok: true }
+              }
+            } catch {}
+
+            return {
+              ok: false,
+              error: 'Пользователь с таким email уже существует. Пожалуйста, перейдите во вкладку «Вход».',
+            }
+          }
+
           if (data.session) {
             await handleSupabaseSession(data.user)
             authModalOpen.value = false
@@ -206,7 +267,7 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
       } catch (err: unknown) {
-        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+        return { ok: false, error: err instanceof Error ? translateAuthError(err.message) : String(err) }
       }
     }
 
@@ -252,7 +313,7 @@ export const useAuthStore = defineStore('auth', () => {
         })
 
         if (error) {
-          return { ok: false, error: error.message }
+          return { ok: false, error: translateAuthError(error.message) }
         }
 
         if (data.user) {
@@ -261,7 +322,7 @@ export const useAuthStore = defineStore('auth', () => {
           return { ok: true }
         }
       } catch (err: unknown) {
-        return { ok: false, error: err instanceof Error ? err.message : String(err) }
+        return { ok: false, error: err instanceof Error ? translateAuthError(err.message) : String(err) }
       }
     }
 

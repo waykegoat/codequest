@@ -121,10 +121,29 @@ function continueAsGuest() {
       </div>
 
       <div v-if="errorMsg" class="auth-modal__alert auth-modal__alert--err">
-        {{ errorMsg }}
+        <div class="auth-modal__alert-text">
+          <span class="auth-modal__alert-icon">⚠️</span>
+          <span>{{ errorMsg }}</span>
+        </div>
+        <div
+          v-if="
+            auth.authModalTab === 'register' &&
+            (errorMsg.includes('Вход') || errorMsg.includes('лимит') || errorMsg.includes('уже существует'))
+          "
+          class="auth-modal__alert-actions"
+        >
+          <button
+            type="button"
+            class="btn btn--sm btn--primary full-w"
+            @click="setTab('login')"
+          >
+            👉 Перейти ко входу с этим email
+          </button>
+        </div>
       </div>
       <div v-if="successMsg" class="auth-modal__alert auth-modal__alert--ok">
-        {{ successMsg }}
+        <span class="auth-modal__alert-icon">✅</span>
+        <span>{{ successMsg }}</span>
       </div>
 
       <!-- Login Form -->
@@ -322,20 +341,41 @@ function continueAsGuest() {
 }
 
 .auth-modal__alert {
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  border-radius: var(--r-md);
   font-size: 0.86rem;
+  line-height: 1.45;
   margin-bottom: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.auth-modal__alert-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.auth-modal__alert-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .auth-modal__alert--err {
-  background: var(--danger-soft);
-  color: var(--danger);
+  background: color-mix(in srgb, #ef4444 14%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
+  color: #fca5a5;
 }
 
 .auth-modal__alert--ok {
-  background: var(--success-soft);
-  color: var(--success);
+  background: color-mix(in srgb, #22c55e 14%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, #22c55e 35%, transparent);
+  color: #86efac;
+}
+
+.auth-modal__alert-actions {
+  margin-top: 4px;
 }
 
 .auth-modal__form {
