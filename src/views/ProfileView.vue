@@ -40,36 +40,6 @@ function resetProgress() {
 function printCert() {
   window.print()
 }
-
-function downloadBackup() {
-  const data = progress.exportData()
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `codequest-progress-${auth.currentUser?.email ? auth.currentUser.email.split('@')[0] : 'guest'}.json`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-function handleFileImport(event: Event) {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const content = e.target?.result as string
-    if (content) {
-      const ok = progress.importData(content)
-      if (ok) {
-        alert('Прогресс успешно загружен!')
-      } else {
-        alert('Ошибка при чтении файла резервной копии.')
-      }
-    }
-  }
-  reader.readAsText(file)
-}
 </script>
 
 <template>
@@ -177,26 +147,6 @@ function handleFileImport(event: Event) {
         <div class="ladder__lvl mono">lvl {{ r.minLevel }}</div>
       </div>
     </div>
-
-    <!-- Резервное копирование и синхронизация -->
-    <section class="card profile__box">
-      <div class="profile__box-head">
-        <h2 class="profile__box-title">💾 Резервная копия прогресса</h2>
-        <span class="mono profile__box-sub">Экспорт и перенос</span>
-      </div>
-      <p class="profile__box-desc">
-        Сохрани свой прогресс (XP, решённые задачи, пройденные уроки) в файл .json, чтобы перенести его на другой браузер или компьютер.
-      </p>
-      <div class="profile__backup-actions">
-        <button class="btn btn--primary btn--sm" @click="downloadBackup">
-          ⬇ Скачать прогресс (.json)
-        </button>
-        <label class="btn btn--ghost btn--sm profile__upload-label">
-          ⬆ Загрузить из файла
-          <input type="file" accept=".json" class="visually-hidden" @change="handleFileImport" />
-        </label>
-      </div>
-    </section>
 
     <!-- Настройки ИИ-наставника -->
     <section class="card profile__box">
@@ -490,17 +440,6 @@ function handleFileImport(event: Event) {
   margin: 0 0 var(--sp-4);
 }
 
-.profile__backup-actions {
-  display: flex;
-  gap: var(--sp-3);
-  flex-wrap: wrap;
-}
-
-.profile__upload-label {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-}
 
 .visually-hidden {
   position: absolute;
