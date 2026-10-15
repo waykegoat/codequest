@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useProgressStore } from '@/stores/progress'
-import { getSupabaseConfig } from '@/services/supabase'
 
 const auth = useAuthStore()
 const progress = useProgressStore()
@@ -17,35 +16,18 @@ const errorMsg = ref('')
 const successMsg = ref('')
 const loading = ref(false)
 
-// Cloud connection config fields
-const cloudUrl = ref('')
-const cloudKey = ref('')
-const cloudSaveMsg = ref('')
-
-onMounted(() => {
-  const cfg = getSupabaseConfig()
-  cloudUrl.value = cfg.url
-  cloudKey.value = cfg.anonKey
-})
-
 function resetForm() {
   email.value = ''
   displayName.value = ''
   password.value = ''
   errorMsg.value = ''
   successMsg.value = ''
-  cloudSaveMsg.value = ''
   loading.value = false
 }
 
-function setTab(tab: 'login' | 'register' | 'cloud') {
+function setTab(tab: 'login' | 'register') {
   auth.authModalTab = tab
   resetForm()
-  if (tab === 'cloud') {
-    const cfg = getSupabaseConfig()
-    cloudUrl.value = cfg.url
-    cloudKey.value = cfg.anonKey
-  }
 }
 
 async function handleLogin() {
@@ -101,17 +83,6 @@ async function handleRegister() {
   }
 }
 
-function saveCloudSettings() {
-  if (!cloudUrl.value.trim() || !cloudKey.value.trim()) {
-    auth.disconnectCloud()
-    cloudSaveMsg.value = 'Облако отключено. Переключено в локальный режим.'
-    return
-  }
-
-  auth.configureCloud(cloudUrl.value, cloudKey.value)
-  cloudSaveMsg.value = '✓ Настройки сохранены! Облако подключено.'
-}
-
 function continueAsGuest() {
   auth.logout()
   progress.switchUser(null)
@@ -126,15 +97,10 @@ function continueAsGuest() {
 
       <div class="auth-modal__header">
         <div class="auth-modal__icon">☁️</div>
-        <h2 class="auth-modal__title">CodeQuest Cloud ID</h2>
+        <h2 class="auth-modal__title">CodeQuest ID</h2>
         <p class="auth-modal__sub">
           Онлайн-профиль: сохраняй прогресс и заходи с любого устройства (ПК, планшет, телефон).
         </p>
-
-        <div class="auth-modal__status-pill" :class="auth.cloudActive ? 'is-cloud' : 'is-local'">
-          <span class="auth-modal__status-dot" />
-          <span>{{ auth.cloudActive ? 'Онлайн-облако активно (Supabase)' : 'Локальный режим (настройте облако для синхронизации)' }}</span>
-        </div>
       </div>
 
       <div class="auth-modal__tabs">
@@ -151,13 +117,6 @@ function continueAsGuest() {
           @click="setTab('register')"
         >
           Регистрация
-        </button>
-        <button
-          class="auth-modal__tab"
-          :class="{ active: auth.authModalTab === 'cloud' }"
-          @click="setTab('cloud')"
-        >
-          ⚙️ Облако
         </button>
       </div>
 
@@ -176,7 +135,7 @@ function continueAsGuest() {
             v-model="email"
             type="email"
             class="form-input"
-            placeholder="developer@example.com"
+            placeholder="developer@gmail.com"
             required
             autocomplete="email"
           />
@@ -202,7 +161,7 @@ function continueAsGuest() {
       </form>
 
       <!-- Register Form -->
-      <form v-else-if="auth.authModalTab === 'register'" class="auth-modal__form" @submit.prevent="handleRegister">
+      <form v-else class="auth-modal__form" @submit.prevent="handleRegister">
         <div class="form-group">
           <label class="form-label">Аватар</label>
           <div class="avatar-picker">
@@ -225,7 +184,7 @@ function continueAsGuest() {
             v-model="email"
             type="email"
             class="form-input"
-            placeholder="developer@example.com"
+            placeholder="developer@gmail.com"
             required
             autocomplete="email"
           />
@@ -261,51 +220,6 @@ function continueAsGuest() {
         </div>
       </form>
 
-      <!-- Cloud Configuration Tab -->
-      <div v-else class="auth-modal__cloud">
-        <div class="cloud-info">
-          <div class="cloud-info__title">Бесплатная база данных Supabase</div>
-          <p class="cloud-info__text">
-            Чтобы прогресс сохранялся в реальном облаке и синхронизировался между телефоном, ноутбуком и рабочим компьютером:
-          </p>
-          <ol class="cloud-info__steps">
-            <li>Создайте бесплатный проект на <strong>supabase.com</strong> (до 50 000 пользователей бесплатно).</li>
-            <li>Выполните скрипт создания таблицы из файла <code>supabase/schema.sql</code> в SQL Editor.</li>
-            <li>Вставьте сюда <strong>Project URL</strong> и <strong>anon public API key</strong> из настроек API:</li>
-          </ol>
-        </div>
-
-        <div v-if="cloudSaveMsg" class="auth-modal__alert auth-modal__alert--ok">
-          {{ cloudSaveMsg }}
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Project URL:</label>
-          <input
-            v-model="cloudUrl"
-            type="text"
-            placeholder="https://xyzcompany.supabase.co"
-            class="form-input"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Project API Anon Key:</label>
-          <input
-            v-model="cloudKey"
-            type="password"
-            placeholder="eyJhbGciOiJIUzI1NiIsIn..."
-            class="form-input"
-          />
-        </div>
-
-        <div class="auth-modal__actions">
-          <button class="btn btn--primary full-w" @click="saveCloudSettings">
-            💾 Сохранить и подключить облако
-          </button>
-        </div>
-      </div>
-
       <div class="auth-modal__footer">
         <button class="btn btn--ghost btn--sm" @click="continueAsGuest">
           Продолжить как гость (офлайн)
@@ -332,9 +246,7 @@ function continueAsGuest() {
 .auth-modal__dialog {
   position: relative;
   width: 100%;
-  max-width: 460px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 440px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
@@ -381,36 +293,6 @@ function continueAsGuest() {
   font-size: 0.85rem;
   color: var(--text-muted);
   line-height: 1.4;
-}
-
-.auth-modal__status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: var(--sp-2);
-  padding: 3px 10px;
-  border-radius: var(--r-full);
-  font-size: 0.76rem;
-  font-family: var(--font-mono);
-}
-
-.auth-modal__status-pill.is-cloud {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  color: var(--success);
-  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
-}
-
-.auth-modal__status-pill.is-local {
-  background: var(--surface-3);
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-}
-
-.auth-modal__status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
 }
 
 .auth-modal__tabs {
@@ -460,40 +342,6 @@ function continueAsGuest() {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
-}
-
-.cloud-info {
-  background: var(--surface-2);
-  border-radius: var(--r-md);
-  padding: var(--sp-3) var(--sp-4);
-  margin-bottom: var(--sp-3);
-  font-size: 0.84rem;
-}
-
-.cloud-info__title {
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.cloud-info__text {
-  margin: 0 0 6px;
-  color: var(--text-muted);
-}
-
-.cloud-info__steps {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--text-muted);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.cloud-info__steps code {
-  font-family: var(--font-mono);
-  background: var(--surface-3);
-  padding: 1px 4px;
-  border-radius: 3px;
 }
 
 .form-group {

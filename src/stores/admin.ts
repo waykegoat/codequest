@@ -34,7 +34,8 @@ export const useAdminStore = defineStore('admin', () => {
   const aiTestError = ref('Expected: 5, Got: undefined')
 
   function authenticate(pin: string): boolean {
-    if (pin === 'admin' || pin === 'admin123' || pin === 'codequest') {
+    const configuredKey = (import.meta.env.VITE_ADMIN_PASSWORD || 'admin123').trim()
+    if (pin === configuredKey || pin === 'admin123' || pin === 'codequest') {
       isAdminAuthenticated.value = true
       localStorage.setItem('codequest:admin_auth', 'true')
       return true

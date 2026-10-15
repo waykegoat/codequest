@@ -173,11 +173,11 @@ function exportStudentsCsv() {
 
       <form class="admin__gate-form" @submit.prevent="handleLogin">
         <div class="form-group">
-          <label class="form-label">PIN-код администратора</label>
+          <label class="form-label">Секретный пароль администратора</label>
           <input
             v-model="pinInput"
             type="password"
-            placeholder="например: admin123"
+            placeholder="••••••••"
             class="form-input"
             required
             autofocus
@@ -188,9 +188,6 @@ function exportStudentsCsv() {
           Войти в панель администратора
         </button>
       </form>
-      <div class="admin__gate-hint">
-        Подсказка для тестирования: PIN <code>admin123</code> или <code>codequest</code>
-      </div>
     </div>
 
     <!-- Authenticated Dashboard -->

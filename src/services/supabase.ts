@@ -1,20 +1,30 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
+export const DEFAULT_SUPABASE_URL = 'https://bispxvxirfjeuxxgesai.supabase.co'
+export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_anqw2VwRtZs6Xrm3xfqPpw_VflYQUAR'
+
 const STORAGE_URL_KEY = 'codequest:supabase_url'
 const STORAGE_ANON_KEY = 'codequest:supabase_anon_key'
 
 let cachedClient: SupabaseClient | null = null
 
 export function getSupabaseConfig(): { url: string; anonKey: string } {
+  const isTest = import.meta.env.MODE === 'test'
+
   const envUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim()
   const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim()
 
   const localUrl = (typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_URL_KEY) || '' : '').trim()
   const localKey = (typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_ANON_KEY) || '' : '').trim()
 
+  // During automated unit tests, avoid sending real HTTP requests to the live Supabase project
+  if (isTest && !localUrl) {
+    return { url: '', anonKey: '' }
+  }
+
   return {
-    url: localUrl || envUrl,
-    anonKey: localKey || envKey,
+    url: localUrl || envUrl || DEFAULT_SUPABASE_URL,
+    anonKey: localKey || envKey || DEFAULT_SUPABASE_ANON_KEY,
   }
 }
 

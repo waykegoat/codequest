@@ -3,12 +3,14 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '@/stores/settings'
 import { useAuthStore } from '@/stores/auth'
+import { useAdminStore } from '@/stores/admin'
 import XpBar from './XpBar.vue'
 import StreakBadge from './StreakBadge.vue'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const admin = useAdminStore()
 </script>
 
 <template>
@@ -24,7 +26,14 @@ const auth = useAuthStore()
         <RouterLink to="/playground" class="hd__link">Песочница</RouterLink>
         <RouterLink to="/achievements" class="hd__link">{{ t('nav.achievements') }}</RouterLink>
         <RouterLink to="/profile" class="hd__link">{{ t('nav.profile') }}</RouterLink>
-        <RouterLink to="/admin" class="hd__link hd__link--admin" title="Панель администратора">🛡️ Админка</RouterLink>
+        <RouterLink
+          v-if="admin.isAdminAuthenticated"
+          to="/admin"
+          class="hd__link hd__link--admin"
+          title="Панель администратора"
+        >
+          🛡️ Админка
+        </RouterLink>
       </nav>
 
       <div class="hd__stats">
