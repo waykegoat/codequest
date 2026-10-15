@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useProgressStore } from '@/stores/progress'
+import { isDisposableEmail, checkClientRateLimit } from '@/services/antiSpamService'
 
 const auth = useAuthStore()
 const progress = useProgressStore()
@@ -15,6 +16,7 @@ const selectedAvatar = ref('🤖')
 const errorMsg = ref('')
 const successMsg = ref('')
 const loading = ref(false)
+const honeypot = ref('')
 
 function resetForm() {
   email.value = ''
@@ -50,10 +52,31 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
-  if (!email.value.trim() || !email.value.includes('@')) {
+  // 1. Honeypot check (bots auto-fill invisible fields)
+  if (honeypot.value) {
+    auth.closeAuthModal()
+    return
+  }
+
+  // 2. Client flood rate limit (max 5 signups per minute per browser)
+  const rateLimit = checkClientRateLimit()
+  if (!rateLimit.allowed) {
+    errorMsg.value = `Слишком много попыток регистрации. Подождите ${rateLimit.waitSeconds} сек.`
+    return
+  }
+
+  const trimmedEmail = email.value.trim().toLowerCase()
+  if (!trimmedEmail || !trimmedEmail.includes('@')) {
     errorMsg.value = 'Введите корректный email (нужен для входа с других устройств)'
     return
   }
+
+  // 3. Block temporary disposable emails
+  if (isDisposableEmail(trimmedEmail)) {
+    errorMsg.value = 'Регистрация с временных одноразовых почтовых сервисов запрещена.'
+    return
+  }
+
   if (!password.value || password.value.length < 6) {
     errorMsg.value = 'Пароль должен быть не менее 6 символов'
     return
@@ -63,8 +86,8 @@ async function handleRegister() {
   errorMsg.value = ''
   successMsg.value = ''
   const res = await auth.register({
-    email: email.value,
-    displayName: displayName.value || email.value.split('@')[0],
+    email: trimmedEmail,
+    displayName: displayName.value || trimmedEmail.split('@')[0],
     password: password.value,
     avatar: selectedAvatar.value,
   })
@@ -181,6 +204,17 @@ function continueAsGuest() {
 
       <!-- Register Form -->
       <form v-else class="auth-modal__form" @submit.prevent="handleRegister">
+        <!-- Honeypot anti-bot trap (hidden from real users) -->
+        <input
+          v-model="honeypot"
+          type="text"
+          name="b_security_code"
+          tabindex="-1"
+          autocomplete="off"
+          class="visually-hidden"
+          aria-hidden="true"
+        />
+
         <div class="form-group">
           <label class="form-label">Аватар</label>
           <div class="avatar-picker">
