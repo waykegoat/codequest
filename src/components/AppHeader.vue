@@ -171,4 +171,30 @@ const admin = useAdminStore()
     display: none;
   }
 }
+@media (max-width: 580px) {
+  .hd__inner {
+    gap: var(--sp-2);
+  }
+  .hd__stats {
+    gap: var(--sp-2);
+  }
+  .hd__user-name {
+    max-width: 60px;
+  }
+}
+@media (max-width: 440px) {
+  .hd__user-name {
+    display: none;
+  }
+  .hd__user-pill {
+    padding: 4px 6px;
+  }
+  .hd__name {
+    font-size: 0.95rem;
+  }
+  .hd__mark {
+    padding: 2px 6px;
+    font-size: 0.85rem;
+  }
+}
 </style>

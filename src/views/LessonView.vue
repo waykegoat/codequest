@@ -372,12 +372,17 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
   align-items: center;
   gap: var(--sp-2);
   margin-bottom: var(--sp-4);
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
 }
 .dot {
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
+  flex-shrink: 0;
   border-radius: var(--r-md);
   background: var(--surface);
   border: 1.5px solid var(--border);
@@ -398,6 +403,7 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
   font-size: 0.85rem;
   color: var(--text-muted);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .lesson__body {
@@ -461,6 +467,38 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
 @media (max-width: 640px) {
   .lesson__body {
     padding: var(--sp-4);
+  }
+  .lesson__title {
+    font-size: 1.25rem;
+  }
+  .lesson__head {
+    gap: var(--sp-2);
+  }
+  .dot {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  .lesson__progress-label {
+    font-size: 0.78rem;
+    margin-left: var(--sp-2);
+  }
+  .lesson__foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-2);
+  }
+  .lesson__skips {
+    justify-content: center;
+    order: 2;
+  }
+  .lesson__foot .btn--primary {
+    order: 1;
+    width: 100%;
+  }
+  .lesson__foot > .btn:first-child {
+    order: 3;
+    width: 100%;
   }
 }
 </style>
