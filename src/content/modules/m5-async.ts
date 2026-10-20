@@ -362,5 +362,100 @@ export const m5Async: Module = {
         },
       ],
     },
+    {
+      id: 'l7-async-boss',
+      title: 'Битва с боссом: Повелитель Асинхронности',
+      subtitle: 'Retry с экспоненциальным бэкоффом',
+      xp: 110,
+      icon: '👑',
+      steps: [
+        {
+          kind: 'boss',
+          title: 'Отказоустойчивый сетевой клиент с Retry и таймаутом',
+          bossName: 'Повелитель Асинхронности',
+          bossAvatar: '⏳',
+          bossRole: 'Мастер Event Loop и Конкурентности',
+          bossHp: 100,
+          prompt: `Напиши надёжную утилиту \`fetchWithRetry\`, которая спасает продакшн при нестабильной сети!
+
+**Требования:**
+1. **Повторные попытки**: принимает асинхронную функцию запроса \`requestFn\`, лимит попыток \`retries = 3\` и базовую задержку \`baseDelay = 200\`.
+2. **Экспоненциальный бэкофф**: перед каждой следующей попыткой выжидает задержку \`baseDelay * (2 ** attempt)\`.
+3. **Таймаут и отмена**: поддержка прерывания через \`AbortController\` / \`AbortSignal\` или ограничение по общему времени.
+4. **Обработка успешного ответа**: возвращает результат при первом успешном ответе без ожидания остальных попыток.
+5. **Финальное исключение**: если все попытки исчерпаны — выбрасывает понятную ошибку с историей неудач.`,
+          lang: 'js',
+          rubrics: [
+            {
+              id: 'async-retry-loop',
+              title: 'Цикл повторных попыток (Retry)',
+              description: 'Реализован цикл повторных вызовов async-операции при ошибках',
+            },
+            {
+              id: 'async-exp-backoff',
+              title: 'Экспоненциальный бэкофф',
+              description: 'Задержка между повторами возрастает экспоненциально',
+            },
+            {
+              id: 'async-abort-timeout',
+              title: 'Поддержка отмены или таймаута',
+              description: 'Предусмотрено прерывание через AbortController или таймаут операции',
+            },
+            {
+              id: 'async-error-propagation',
+              title: 'Проброс финальной ошибки',
+              description: 'При исчерпании всех попыток выбрасывается понятная ошибка с контекстом',
+            },
+          ],
+          hints: [
+            'const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))',
+            'for (let attempt = 0; attempt < retries; attempt++) { try { return await requestFn(); } catch (err) { ... } }',
+          ],
+          starter: `// ⏳ Битва с боссом: Повелитель Асинхронности
+// Реализуй fetchWithRetry
+
+export async function fetchWithRetry(requestFn, { retries = 3, baseDelay = 100, signal = null } = {}) {
+  // Напиши логику цикла с повторами, бэкоффом и обработкой ошибок
+}
+`,
+          solution: `export async function fetchWithRetry(
+  requestFn,
+  { retries = 3, baseDelay = 100, signal = null } = {}
+) {
+  let lastError = null
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    // Проверяем, не был ли запрос уже отменён
+    if (signal?.aborted) {
+      throw new Error('Операция прервана клиентом')
+    }
+
+    try {
+      return await requestFn()
+    } catch (err) {
+      lastError = err
+
+      // Если это была последняя попытка — выходим из цикла
+      if (attempt === retries - 1) {
+        break
+      }
+
+      // Экспоненциальная задержка: 100ms, 200ms, 400ms...
+      const delay = baseDelay * Math.pow(2, attempt)
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, delay)
+        signal?.addEventListener('abort', () => {
+          clearTimeout(timer)
+          reject(new Error('Операция прервана'))
+        }, { once: true })
+      })
+    }
+  }
+
+  throw new Error(\`Все \${retries} попыток завершились сбоем. Последняя ошибка: \${lastError?.message || lastError}\`)
+}`,
+        },
+      ],
+    },
   ],
 }

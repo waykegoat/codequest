@@ -401,5 +401,114 @@ export const m0Html: Module = {
         },
       ],
     },
+    {
+      id: 'l8-html-boss',
+      title: 'Битва с боссом: Семантический Архитектор',
+      subtitle: 'ИИ-испытание семантики W3C',
+      xp: 85,
+      icon: '👑',
+      steps: [
+        {
+          kind: 'boss',
+          title: 'Семантический портал разработчика',
+          bossName: 'Семантический Архитектор',
+          bossAvatar: '🗿',
+          bossRole: 'Хранитель Стандартов W3C',
+          bossHp: 100,
+          prompt: `Сверстай полноценную страницу личного блога разработчика со строгим соблюдением веб-стандартов!
+
+**Требования:**
+1. **Каркас страницы**: используй \`<header>\`, \`<nav>\`, \`<main>\`, \`<article>\`, \`<aside>\` и \`<footer>\`.
+2. **Навигация**: меню со ссылками на разделы («Главная», «Статьи», «Контакты»).
+3. **Контент**: статья с заголовком \`<h2>\`, абзацами и списком ключевых навыков.
+4. **Форма подписки / связи**: форма \`<form>\` с полем ввода почты (\`type="email"\`), текстовым полем и кнопкой \`<button type="submit">\`.
+5. **Подвал**: подвал \`<footer>\` с копирайтом и ссылками на соцсети.`,
+          lang: 'html',
+          rubrics: [
+            {
+              id: 'html-semantic-tags',
+              title: 'Семантические ориентиры',
+              description: 'Страница построена на тегах header, nav, main, section/article, aside и footer без сплошных div',
+            },
+            {
+              id: 'html-navigation',
+              title: 'Навигационная панель',
+              description: 'Тег nav содержит ссылки для перехода по сайту',
+            },
+            {
+              id: 'html-form-inputs',
+              title: 'Семантическая форма связи',
+              description: 'Присутствует тег form с полями input (type=email) и кнопкой отправки',
+            },
+            {
+              id: 'html-structure-headings',
+              title: 'Иерархия заголовков',
+              description: 'Использованы заголовки уровней h1, h2 для структурирования информации',
+            },
+          ],
+          hints: [
+            'Не используй div там, где есть семантический тег (header, main, footer, article, nav).',
+            'Форма должна содержать <input type="email" required placeholder="..."> и <button type="submit">.',
+          ],
+          starter: `<!-- 🗿 Битва с боссом: Семантический Архитектор -->
+<!-- Собери семантическую страницу блога разработчика -->
+
+<header>
+  <h1>Портфолио инженера</h1>
+  <!-- Добавь навигацию nav со ссылками -->
+</header>
+
+<main>
+  <!-- Добавь статью article и секцию section -->
+</main>
+
+<!-- Добавь боковую панель aside, форму form и подвал footer -->
+`,
+          solution: `<header>
+  <h1>Портфолио инженера</h1>
+  <nav>
+    <ul>
+      <li><a href="#about">Обо мне</a></li>
+      <li><a href="#projects">Проекты</a></li>
+      <li><a href="#contact">Контакты</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <article>
+    <h2>Создание архитектуры современных веб-приложений</h2>
+    <p>Современная разработка требует строгого разделения ответственности и семантики.</p>
+    <section>
+      <h3>Стек технологий</h3>
+      <ul>
+        <li>HTML5 & CSS3</li>
+        <li>Vue 3 & TypeScript</li>
+        <li>Node.js & PostgreSQL</li>
+      </ul>
+    </section>
+  </article>
+
+  <aside>
+    <h3>Обо мне</h3>
+    <p>Full-stack разработчик, создаю удобные и быстрые продукты.</p>
+  </aside>
+
+  <section id="contact">
+    <h2>Связаться со мной</h2>
+    <form action="#" method="post">
+      <label for="email">Ваш Email:</label>
+      <input id="email" type="email" placeholder="dev@example.com" required />
+      <button type="submit">Отправить</button>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 CodeQuest. Все права защищены.</p>
+</footer>`,
+        },
+      ],
+    },
   ],
 }

@@ -433,5 +433,141 @@ export const m2JsDeep: Module = {
         },
       ],
     },
+    {
+      id: 'l7-js-boss',
+      title: 'Битва с боссом: Магистр Замыканий',
+      subtitle: 'Паттерн EventEmitter на замыканиях',
+      xp: 100,
+      icon: '👑',
+      steps: [
+        {
+          kind: 'boss',
+          title: 'Шина событий: кастомный EventEmitter',
+          bossName: 'Магистр Замыканий',
+          bossAvatar: '🧙',
+          bossRole: 'Хранитель Паттернов и Областей Видимости',
+          bossHp: 100,
+          prompt: `Спроектируй полноценную шину событий (\`EventEmitter\`) — ключевой паттерн любого сложного веб-приложения и Node.js!
+
+**Требования:**
+1. **Хранилище событий**: структура для хранения массивов функций-слушателей по именам событий.
+2. **Подписка**: метод \`on(event, handler)\`, регистрирующий функцию и возвращающий функцию для быстрой отписки.
+3. **Оповещение**: метод \`emit(event, ...args)\`, вызывающий всех подписчиков с переданными параметрами.
+4. **Отписка**: метод \`off(event, handler)\`, аккуратно удаляющий переданный обработчик.
+5. **Однократный вызов**: метод \`once(event, handler)\`, который срабатывает ровно 1 раз и сам отписывается.
+6. **Отказоустойчивость**: если \`emit\` вызывается для события, у которого нет подписчиков, код не должен падать.`,
+          lang: 'js',
+          rubrics: [
+            {
+              id: 'ee-events-storage',
+              title: 'Хранилище слушателей',
+              description: 'Слушатели хранятся в изолированной структуре (Map или объект)',
+            },
+            {
+              id: 'ee-on-emit',
+              title: 'Методы on и emit',
+              description: 'Корректная регистрация подписчиков и вызов всех функций с передачей аргументов',
+            },
+            {
+              id: 'ee-off-unsubscribe',
+              title: 'Механизм отписки',
+              description: 'Реализован метод off или возврат функции отписки unsubscribe',
+            },
+            {
+              id: 'ee-once',
+              title: 'Однократная подписка once',
+              description: 'Функция once вызывает слушатель 1 раз и удаляет подписку через замыкание',
+            },
+            {
+              id: 'ee-edge-cases',
+              title: 'Безопасность вызовов',
+              description: 'Предусмотрена защита от вызова несуществующих событий без исключений',
+            },
+          ],
+          hints: [
+            'const listeners = new Map()',
+            'const fns = listeners.get(event) || []',
+            'once(event, fn) оборачивает fn во внутреннюю функцию, которая вызывает off() перед вызовом fn.',
+          ],
+          starter: `// 🧙 Битва с боссом: Магистр Замыканий
+// Реализуй класс EventEmitter
+
+export class EventEmitter {
+  constructor() {
+    this.events = {}
+  }
+
+  on(event, handler) {
+    // Подписка
+  }
+
+  emit(event, ...args) {
+    // Вызов подписчиков
+  }
+
+  off(event, handler) {
+    // Отписка
+  }
+
+  once(event, handler) {
+    // Однократная подписка
+  }
+}
+`,
+          solution: `export class EventEmitter {
+  constructor() {
+    this.events = new Map()
+  }
+
+  on(event, handler) {
+    if (!this.events.has(event)) {
+      this.events.set(event, [])
+    }
+    this.events.get(event).push(handler)
+
+    // Возвращаем удобную функцию отписки
+    return () => this.off(event, handler)
+  }
+
+  emit(event, ...args) {
+    const handlers = this.events.get(event)
+    if (!handlers || handlers.length === 0) return false
+
+    // Копируем массив, чтобы отписки во время выполнения не нарушали итерацию
+    const copy = [...handlers]
+    for (const fn of copy) {
+      try {
+        fn(...args)
+      } catch (err) {
+        console.error('Ошибка в обработчике события ' + event + ':', err)
+      }
+    }
+    return true
+  }
+
+  off(event, handler) {
+    const handlers = this.events.get(event)
+    if (!handlers) return
+
+    const index = handlers.indexOf(handler)
+    if (index !== -1) {
+      handlers.splice(index, 1)
+    }
+    if (handlers.length === 0) {
+      this.events.delete(event)
+    }
+  }
+
+  once(event, handler) {
+    const wrapper = (...args) => {
+      this.off(event, wrapper)
+      handler(...args)
+    }
+    return this.on(event, wrapper)
+  }
+}`,
+        },
+      ],
+    },
   ],
 }

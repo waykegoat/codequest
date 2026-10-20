@@ -122,6 +122,28 @@ export interface OrderStep {
   hints?: string[]
 }
 
+export interface BossRubric {
+  id: string
+  title: string
+  description: string
+  weight?: number
+}
+
+export interface BossStep {
+  kind: 'boss'
+  title: string
+  bossName: string
+  bossAvatar: string
+  bossRole: string
+  bossHp?: number
+  prompt: string
+  lang: CodeLang
+  starter: string
+  rubrics: BossRubric[]
+  hints?: string[]
+  solution?: string
+}
+
 export type LessonStep =
   | TheoryStep
   | QuizStep
@@ -131,6 +153,7 @@ export type LessonStep =
   | SqlStep
   | BlankStep
   | OrderStep
+  | BossStep
 
 export interface Lesson {
   id: string

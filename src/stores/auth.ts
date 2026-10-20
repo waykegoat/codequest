@@ -130,10 +130,6 @@ export const useAuthStore = defineStore('auth', () => {
     cloudActive.value = isCloudConfigured()
     const supabase = getSupabaseClient()
     if (!supabase) {
-      if (requireAuth.value && !currentUser.value) {
-        authModalOpen.value = true
-        authModalTab.value = 'register'
-      }
       return
     }
 
@@ -141,9 +137,6 @@ export const useAuthStore = defineStore('auth', () => {
       const { data } = await supabase.auth.getSession()
       if (data?.session?.user) {
         await handleSupabaseSession(data.session.user)
-      } else if (requireAuth.value && !currentUser.value) {
-        authModalOpen.value = true
-        authModalTab.value = 'register'
       }
 
       supabase.auth.onAuthStateChange(async (event, session) => {
@@ -154,18 +147,10 @@ export const useAuthStore = defineStore('auth', () => {
           currentUserId.value = null
           const progress = useProgressStore()
           progress.switchUser(null)
-          if (requireAuth.value) {
-            authModalOpen.value = true
-            authModalTab.value = 'login'
-          }
         }
       })
     } catch (err) {
       console.warn('Ошибка при проверке онлайн-сессии Supabase:', err)
-      if (requireAuth.value && !currentUser.value) {
-        authModalOpen.value = true
-        authModalTab.value = 'register'
-      }
     }
   }
 
@@ -394,9 +379,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function closeAuthModal() {
-    if (requireAuth.value && !currentUser.value) {
-      return
-    }
     authModalOpen.value = false
   }
 

@@ -466,91 +466,213 @@ export const roadmapModules: Module[] = [
       },
       {
         id: 'l1-capstone',
-        title: 'Твоё приложение',
-        subtitle: 'Всё вместе',
-        xp: 70,
-        icon: '🏁',
+        title: 'Финальный Босс: Дипломный проект',
+        subtitle: 'Гранд-Финал Full-Stack',
+        xp: 150,
+        icon: '👑',
         steps: [
           {
             kind: 'theory',
-            title: 'Диплом фулл-стека',
+            title: 'Диплом фулл-стек разработчика',
             blocks: [
               {
                 type: 'text',
-                md: 'Финал — собственное приложение: интерфейс на компонентах, REST API на Node, данные в базе. Это и есть твой проект в портфолио.',
+                md: 'Поздравляем! Ты прошёл путь от первого тега HTML до проектирования баз данных, асинхронных потоков и реактивных интерфейсов на Vue 3.',
               },
               {
                 type: 'callout',
                 tone: 'tip',
-                md: 'Пройдя все модули, ты собираешь полноценное фулл-стек приложение — уверенный уровень Junior с заявкой на Middle. 🚀',
+                md: 'Впереди главное испытание платформы: финальный босс, где ИИ-арбитр оценит твою способность собрать сложную бизнес-логику в единую надёжную систему.',
               },
             ],
           },
           {
             kind: 'quiz',
-            question: 'Фулл-стек разработчик работает...',
+            question: 'Что отличает зрелого Full-Stack разработчика уровня Junior+ / Middle?',
             options: [
-              'только с дизайном',
-              'и с фронтендом, и с бэкендом, и с базой данных',
-              'только с серверами',
-              'только с базами данных',
+              'Умение слепо копировать код из готовых шаблонов',
+              'Понимание всей вертикали: от реактивного состояния и UX до API, валидации и обработки сбоев',
+              'Отказ от фреймворков и написание всего на чистом DOM',
+              'Использование только одного языка программирования без тестов',
             ],
             answer: 1,
-            explanation: 'Full-stack = вся вертикаль: интерфейс, серверная логика и хранение данных.',
+            explanation: 'Настоящий full-stack инженер видит систему целиком: архитектуру данных, обработку ошибок, реактивность и надёжность контрактов API.',
           },
           {
-            kind: 'code',
-            title: 'Сводка по задачам',
+            kind: 'boss',
+            title: 'Гранд-Финал: Архитектура Full-Stack TaskFlow',
+            bossName: 'Титан Full-Stack Разработки',
+            bossAvatar: '🌌',
+            bossRole: 'Финальный Хранитель Всех Технологий',
+            bossHp: 100,
+            prompt: `Финальный экзамен платформы! Спроектируй ядро приложения TaskFlow на современном Vue 3 Composition API с интеграцией REST API.
+
+**Требования к финальному проекту:**
+1. **Реактивное состояние**: список задач \`tasks\`, текущий фильтр статуса (\`'all' | 'active' | 'completed'\`) и индикатор загрузки \`loading\`.
+2. **Вычисляемая аналитика**: свойство \`stats\` (общее число, процент выполнения, распределение по приоритетам) и \`filteredTasks\` (список с учётом фильтра).
+3. **Асинхронная синхронизация с API**: методы \`fetchTasks()\` и \`syncTask(id, payload)\` с использованием \`async/await\`.
+4. **Отказоустойчивость и безопасность**: обработка ошибок через \`try...catch\`, валидация непустого заголовка задачи перед отправкой.
+5. **Чистый API сервиса**: возврат реактивных переменных и методов управления из композабла/модуля.`,
             lang: 'js',
-            prompt:
-              'Финальная задача на всё сразу. Дан массив задач `{ done: boolean }`. Напиши функцию `summary(tasks)`, которая возвращает объект `{ total, done }` — сколько задач всего и сколько выполнено.',
-            entry: 'summary',
-            starter: 'function summary(tasks) {\n  \n}',
-            tests: [
+            rubrics: [
               {
-                name: '3 задачи, 2 готовы → {total:3, done:2}',
-                args: [[{ done: true }, { done: false }, { done: true }]],
-                expected: { total: 3, done: 2 },
+                id: 'fs-reactive-state',
+                title: 'Реактивное состояние Vue 3',
+                description: 'Реализовано хранение задач, фильтров и статуса загрузки через ref/reactive',
               },
-              { name: 'пусто → {total:0, done:0}', args: [[]], expected: { total: 0, done: 0 } },
               {
-                name: 'все готовы → {total:2, done:2}',
-                args: [[{ done: true }, { done: true }]],
-                expected: { total: 2, done: 2 },
+                id: 'fs-computed-metrics',
+                title: 'Вычисляемые метрики (computed)',
+                description: 'Реализованы свойства computed для расчёта аналитики выполнения и фильтрации задач',
+              },
+              {
+                id: 'fs-async-sync',
+                title: 'Асинхронная работа с REST API',
+                description: 'Реализованы асинхронные методы загрузки и обновления с async/await или Promise',
+              },
+              {
+                id: 'fs-error-resilience',
+                title: 'Отказоустойчивость и валидация',
+                description: 'Предусмотрена обработка сетевых сбоев через try/catch и валидация данных',
+              },
+              {
+                id: 'fs-clean-architecture',
+                title: 'Чистая архитектура модуля',
+                description: 'Спроектирован удобный публичный интерфейс модуля с экспортом необходимых методов',
               },
             ],
             hints: [
-              'total — это tasks.length.',
-              'done — tasks.filter((t) => t.done).length.',
+              'Импортируй ref и computed из vue.',
+              'Для фильтрации используй computed(() => tasks.value.filter(...)).',
+              'Оборачивай сетевые вызовы в try...catch и сбрасывай loading.value в finally.',
             ],
-            solution:
-              'function summary(tasks) {\n  return {\n    total: tasks.length,\n    done: tasks.filter((t) => t.done).length,\n  }\n}',
-          },
-          {
-            kind: 'markup',
-            title: 'Витрина проекта',
-            prompt:
-              'Сверстай страницу-витрину своего приложения: `<header>` с `<h1>` **TaskFlow**, `<main>` с карточкой `<div class="card">` (внутри — абзац), `<footer>` с текстом **Сделано на CodeQuest**. Карточке задай белый фон, отступ `20px` и скругление `12px`.',
-            editors: ['html', 'css'],
-            starterHtml: '<header>\n  \n</header>\n<main>\n  \n</main>\n<footer></footer>',
-            starterCss: '.card {\n  \n}',
-            checks: [
-              { name: 'Заголовок h1 «TaskFlow»', kind: 'text', selector: 'header h1', equals: 'TaskFlow' },
-              { name: 'Карточка внутри main', kind: 'exists', selector: 'main .card' },
-              { name: 'В карточке есть абзац', kind: 'exists', selector: '.card p' },
-              { name: 'Подвал «Сделано на CodeQuest»', kind: 'text', selector: 'footer', equals: 'Сделано на CodeQuest' },
-              { name: 'Белый фон карточки', kind: 'style', selector: '.card', prop: 'background-color', equals: 'white' },
-              { name: 'Отступ 20px', kind: 'style', selector: '.card', prop: 'padding-top', equals: '20px' },
-              { name: 'Скругление 12px', kind: 'style', selector: '.card', prop: 'border-radius', equals: '12px' },
-            ],
-            hints: [
-              'Каркас: header → main → footer, карточка в main.',
-              '.card { background-color: white; padding: 20px; border-radius: 12px; }',
-            ],
-            solutionHtml:
-              '<header>\n  <h1>TaskFlow</h1>\n</header>\n<main>\n  <div class="card">\n    <p>Список задач с API и базой данных.</p>\n  </div>\n</main>\n<footer>Сделано на CodeQuest</footer>',
-            solutionCss:
-              '.card {\n  background-color: white;\n  padding: 20px;\n  border-radius: 12px;\n}',
+            starter: `// 🌌 ГРАНД-ФИНАЛ: ТИТАН FULL-STACK РАЗРАБОТКИ
+// Спроектируй полноценный модуль управления задачами на Vue 3
+
+import { ref, computed } from 'vue'
+
+export function useTaskFlow(apiClient = null) {
+  // 1. Реактивное состояние (tasks, filter, loading, error)
+  const tasks = ref([])
+  const filter = ref('all')
+  const loading = ref(false)
+
+  // 2. Вычисляемые свойства (stats, filteredTasks)
+
+  // 3. Асинхронные операции (fetchTasks, createTask, updateTask)
+
+  return {
+    tasks,
+    filter,
+    loading
+  }
+}
+`,
+            solution: `import { ref, computed } from 'vue'
+
+export function useTaskFlow(apiClient = null) {
+  const tasks = ref([
+    { id: 't-1', title: 'Спроектировать схему базы данных', priority: 'high', done: true },
+    { id: 't-2', title: 'Написать REST API на Node.js', priority: 'high', done: true },
+    { id: 't-3', title: 'Сверстать адаптивный интерфейс на Vue 3', priority: 'medium', done: false }
+  ])
+  const filter = ref('all')
+  const loading = ref(false)
+  const errorMessage = ref(null)
+
+  // Вычисляемые метрики проекта
+  const stats = computed(() => {
+    const total = tasks.value.length
+    const doneCount = tasks.value.filter((t) => t.done).length
+    const percent = total > 0 ? Math.round((doneCount / total) * 100) : 0
+    return {
+      total,
+      doneCount,
+      percent,
+      highPriority: tasks.value.filter((t) => t.priority === 'high' && !t.done).length
+    }
+  })
+
+  // Фильтрация задач
+  const filteredTasks = computed(() => {
+    if (filter.value === 'active') return tasks.value.filter((t) => !t.done)
+    if (filter.value === 'completed') return tasks.value.filter((t) => t.done)
+    return tasks.value
+  })
+
+  // Асинхронная загрузка с API
+  async function fetchTasks() {
+    loading.value = true
+    errorMessage.value = null
+    try {
+      if (apiClient && typeof apiClient.get === 'function') {
+        const response = await apiClient.get('/api/tasks')
+        tasks.value = response.data || response
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 200))
+      }
+    } catch (err) {
+      errorMessage.value = 'Не удалось загрузить задачи: ' + (err.message || 'Ошибка сети')
+      console.error(errorMessage.value)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Создание задачи с валидацией
+  async function createTask(title, priority = 'medium') {
+    if (!title || !title.trim()) {
+      throw new Error('Название задачи не может быть пустым')
+    }
+    const newTask = {
+      id: 'task-' + Date.now(),
+      title: title.trim(),
+      priority,
+      done: false,
+      createdAt: new Date().toISOString()
+    }
+    try {
+      loading.value = true
+      if (apiClient && typeof apiClient.post === 'function') {
+        await apiClient.post('/api/tasks', newTask)
+      }
+      tasks.value.push(newTask)
+      return newTask
+    } catch (err) {
+      errorMessage.value = 'Ошибка создания задачи'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Переключение статуса
+  async function toggleTask(id) {
+    const task = tasks.value.find((t) => t.id === id)
+    if (!task) return
+    task.done = !task.done
+    try {
+      if (apiClient && typeof apiClient.put === 'function') {
+        await apiClient.put('/api/tasks/' + id, { done: task.done })
+      }
+    } catch (err) {
+      console.warn('Синхронизация не удалась, локальное состояние сохранено:', err)
+    }
+  }
+
+  return {
+    tasks,
+    filter,
+    loading,
+    errorMessage,
+    stats,
+    filteredTasks,
+    fetchTasks,
+    createTask,
+    toggleTask
+  }
+}
+`,
           },
         ],
       },

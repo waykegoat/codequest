@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -41,4 +42,14 @@ export const router = createRouter({
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition ?? { top: 0 }
   },
+})
+
+router.beforeEach((to, _from, next) => {
+  const auth = useAuthStore()
+  if (to.name === 'lesson' && auth.isGuest) {
+    auth.openAuthModal('register')
+    next({ name: 'home' })
+    return
+  }
+  next()
 })

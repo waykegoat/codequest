@@ -13,9 +13,10 @@ import DomStep from '@/components/steps/DomStep.vue'
 import SqlStep from '@/components/steps/SqlStep.vue'
 import BlankStep from '@/components/steps/BlankStep.vue'
 import OrderStep from '@/components/steps/OrderStep.vue'
+import BossStep from '@/components/steps/BossStep.vue'
 import MascotCoach from '@/components/MascotCoach.vue'
 
-type StepKind = 'theory' | 'quiz' | 'code' | 'markup' | 'dom' | 'sql' | 'blank' | 'order'
+type StepKind = 'theory' | 'quiz' | 'code' | 'markup' | 'dom' | 'sql' | 'blank' | 'order' | 'boss'
 
 const STEP_ICON: Record<StepKind, string> = {
   theory: '📖',
@@ -26,6 +27,7 @@ const STEP_ICON: Record<StepKind, string> = {
   sql: '🗄️',
   blank: '▢',
   order: '↕',
+  boss: '👑',
 }
 
 const SOLVED_LINES = [
@@ -87,6 +89,20 @@ function onCodeSolved(firstTry: boolean) {
   if (firstTime) {
     progress.markCodeSolved()
     if (firstTry) progress.addXp(XP_REWARDS.firstTry)
+  }
+  progress.checkAchievements()
+  stepSolved.value = true
+}
+
+function onBossSolved(firstTry: boolean) {
+  const firstTime = progress.markStepComplete(
+    fullId.value,
+    currentIndex.value,
+    XP_REWARDS.codeSolved * 2,
+  )
+  if (firstTime) {
+    progress.markCodeSolved()
+    if (firstTry) progress.addXp(XP_REWARDS.firstTry * 2)
   }
   progress.checkAchievements()
   stepSolved.value = true
@@ -194,6 +210,8 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
       return { mood: 'thinking', message: 'Заполни пропуски правильными словами 👀' }
     case 'order':
       return { mood: 'thinking', message: 'Перетащи строки в правильном порядке ↕' }
+    case 'boss':
+      return { mood: 'thinking', message: 'Впереди бой с боссом! Покажи всё, чему научился — ИИ оценит твой проект ⚔️' }
     default:
       return { mood: 'idle', message: 'Разберём тему спокойно. Читай — и жми «Дальше» 🙂' }
   }
@@ -282,6 +300,12 @@ const coach = computed<{ mood: 'idle' | 'happy' | 'thinking'; message: string }>
           :key="currentIndex"
           :step="currentStep"
           @solved="onExerciseSolved"
+        />
+        <BossStep
+          v-else-if="currentStep.kind === 'boss'"
+          :key="currentIndex"
+          :step="currentStep"
+          @solved="onBossSolved"
         />
       </div>
 

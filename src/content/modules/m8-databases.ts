@@ -474,5 +474,96 @@ export const m8Databases: Module = {
         },
       ],
     },
+    {
+      id: 'l9-sql-boss',
+      title: 'Битва с боссом: Архивариус Данных',
+      subtitle: 'Сложная аналитика и группировка SQL',
+      xp: 110,
+      icon: '👑',
+      steps: [
+        {
+          kind: 'boss',
+          title: 'Аналитический отчёт по лучшим клиентам',
+          bossName: 'Архивариус Данных',
+          bossAvatar: '🗄️',
+          bossRole: 'Хранитель Реляционных Схем и Аналитики',
+          bossHp: 100,
+          prompt: `Сформируй сложный SQL-запрос для выгрузки топ-клиентов бизнес-аналитики!
+
+**Схема данных:**
+- \`users\` (\`id\`, \`name\`, \`city\`)
+- \`orders\` (\`id\`, \`user_id\`, \`status\`, \`created_at\`)
+- \`order_items\` (\`id\`, \`order_id\`, \`price\`, \`quantity\`)
+
+**Требования к запросу:**
+1. **Объединение таблиц**: свяжи \`users\`, \`orders\` и \`order_items\` через \`JOIN\`.
+2. **Фильтрация статуса**: учитывай только заказы со статусом \`status = 'completed'\`.
+3. **Агрегация**: вычисли общую сумму покупок каждого клиента (\`SUM(price * quantity)\`) и количество его уникальных заказов (\`COUNT(DISTINCT orders.id)\`).
+4. **Группировка**: сгруппируй результат по идентификатору и имени пользователя (\`GROUP BY\`).
+5. **Фильтр групп**: оставь только тех пользователей, чья общая сумма превышает 5000 (\`HAVING\`).
+6. **Сортировка и топ**: отсортируй по убыванию выручки (\`ORDER BY ... DESC\`) и возьми топ-5 клиентов (\`LIMIT 5\`).`,
+          lang: 'sql',
+          rubrics: [
+            {
+              id: 'sql-join-tables',
+              title: 'Связывание таблиц (JOIN)',
+              description: 'Корректно объединены таблицы пользователей, заказов и позиций заказов',
+            },
+            {
+              id: 'sql-aggregates',
+              title: 'Агрегатные функции (SUM, COUNT)',
+              description: 'Рассчитана выручка через SUM и число заказов через COUNT(DISTINCT)',
+            },
+            {
+              id: 'sql-group-by',
+              title: 'Группировка данных (GROUP BY)',
+              description: 'Выполнена группировка по пользователям',
+            },
+            {
+              id: 'sql-having-filter',
+              title: 'Фильтрация групп (HAVING)',
+              description: 'Использовано условие HAVING для отбора клиентов с суммой более 5000',
+            },
+            {
+              id: 'sql-order-limit',
+              title: 'Сортировка и лимит (ORDER BY, LIMIT)',
+              description: 'Задана сортировка по убыванию суммы покупок и ограничение выборки',
+            },
+          ],
+          hints: [
+            'JOIN orders ON orders.user_id = users.id',
+            'JOIN order_items ON order_items.order_id = orders.id',
+            'WHERE orders.status = "completed"',
+            'GROUP BY users.id, users.name HAVING SUM(price * quantity) > 5000 ORDER BY total_spent DESC LIMIT 5;',
+          ],
+          starter: `-- 🗄️ Битва с боссом: Архивариус Данных
+-- Напиши аналитический SQL-запрос
+
+SELECT
+  users.id,
+  users.name
+  -- Добавь расчетные поля
+FROM users
+-- Добавь JOIN таблиц orders и order_items
+-- Добавь WHERE, GROUP BY, HAVING, ORDER BY и LIMIT
+;
+`,
+          solution: `SELECT
+  users.id,
+  users.name,
+  users.city,
+  COUNT(DISTINCT orders.id) AS orders_count,
+  SUM(order_items.price * order_items.quantity) AS total_spent
+FROM users
+JOIN orders ON orders.user_id = users.id
+JOIN order_items ON order_items.order_id = orders.id
+WHERE orders.status = 'completed'
+GROUP BY users.id, users.name, users.city
+HAVING SUM(order_items.price * order_items.quantity) > 5000
+ORDER BY total_spent DESC
+LIMIT 5;`,
+        },
+      ],
+    },
   ],
 }

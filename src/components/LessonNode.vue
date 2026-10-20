@@ -18,6 +18,8 @@ const kinds = computed(() => {
   return [...set]
 })
 
+const hasBoss = computed(() => props.flat.lesson.steps.some((s) => s.kind === 'boss'))
+
 function open() {
   if (!unlocked.value) return
   router.push({
@@ -30,24 +32,32 @@ function open() {
 <template>
   <button
     class="node"
-    :class="{ 'node--done': completed, 'node--skipped': !completed && skipped, 'node--locked': !unlocked }"
+    :class="{
+      'node--done': completed,
+      'node--skipped': !completed && skipped,
+      'node--locked': !unlocked,
+      'node--boss': hasBoss,
+    }"
     :disabled="!unlocked"
     @click="open"
   >
-    <span class="node__badge">
+    <span class="node__badge" :class="{ 'node__badge--boss': hasBoss }">
       <span v-if="completed" class="node__check">✓</span>
       <span v-else-if="skipped" class="node__skip" title="Урок пропущен">⏩</span>
       <span v-else-if="!unlocked" class="node__lock">🔒</span>
       <span v-else class="node__icon">{{ flat.lesson.icon }}</span>
     </span>
     <span class="node__info">
-      <span class="node__title">{{ flat.lesson.title }}</span>
+      <span class="node__title">
+        {{ flat.lesson.title }}
+        <span v-if="hasBoss" class="node__boss-tag">БОСС</span>
+      </span>
       <span class="node__sub">{{ flat.lesson.subtitle }}</span>
     </span>
     <span class="node__meta">
       <span class="node__kinds">
         <span v-for="k in kinds" :key="k" class="node__kdot" :title="k">{{
-          k === 'theory' ? '›' : k === 'quiz' ? '?' : k === 'markup' ? '#' : '/'
+          k === 'boss' ? '👑' : k === 'theory' ? '›' : k === 'quiz' ? '?' : k === 'markup' ? '#' : '/'
         }}</span>
       </span>
       <span class="node__xp">+{{ flat.lesson.xp }}</span>
@@ -163,5 +173,30 @@ function open() {
 }
 .node--locked .node__badge {
   filter: grayscale(1);
+}
+
+.node--boss {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(239, 68, 68, 0.05) 100%);
+}
+.node--boss:hover:not(:disabled) {
+  border-color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+.node__badge--boss {
+  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.15);
+}
+.node__boss-tag {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: var(--r-sm);
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  vertical-align: middle;
 }
 </style>

@@ -383,5 +383,125 @@ export const m0bCss: Module = {
         },
       ],
     },
+    {
+      id: 'l8-css-boss',
+      title: 'Битва с боссом: Владыка Адаптива',
+      subtitle: 'Flexbox, Grid и Неоновый стиль',
+      xp: 90,
+      icon: '👑',
+      steps: [
+        {
+          kind: 'boss',
+          title: 'Адаптивная киберпанк-визитка разработчика',
+          bossName: 'Владыка Адаптива',
+          bossAvatar: '⚡',
+          bossRole: 'Мастер Grid, Flexbox и Неона',
+          bossHp: 100,
+          prompt: `Спроектируй стили для современной адаптивной карточки профиля!
+
+**Требования:**
+1. **Современная сетка**: используй \`display: flex\` или \`display: grid\` для выравнивания элементов карточки.
+2. **Визуальный стиль**: тёмный фон, яркий контрастный текст, скругление углов (\`border-radius\`) и неоновое свечение (\`box-shadow\`).
+3. **Интерактивность**: добавь состояние наведения (\`:hover\`) с плавным переходом (\`transition\`) для кнопок или всей карточки.
+4. **Адаптивность**: медиа-запрос \`@media (max-width: 600px)\`, меняющий направление сетки или размер шрифтов для удобного просмотра со смартфона.`,
+          lang: 'css',
+          rubrics: [
+            {
+              id: 'css-modern-layout',
+              title: 'Современная сетка (Flex/Grid)',
+              description: 'Компоновка построена на базе Flexbox или CSS Grid с выравниванием',
+            },
+            {
+              id: 'css-responsive-media',
+              title: 'Адаптивность через @media',
+              description: 'Реализован медиа-запрос под мобильные экраны (max-width: 600px / 768px)',
+            },
+            {
+              id: 'css-visual-effects',
+              title: 'Эстетика и эффекты',
+              description: 'Использованы box-shadow, border-radius и гармоничная цветовая палитра',
+            },
+            {
+              id: 'css-interactive-transitions',
+              title: 'Плавная интерактивность (:hover)',
+              description: 'Настроены псевдоклассы :hover и переходы transition',
+            },
+          ],
+          hints: [
+            'display: flex; flex-direction: column; gap: 16px; align-items: center;',
+            'box-shadow: 0 0 20px rgba(124, 92, 255, 0.5);',
+            '@media (max-width: 600px) { ... }',
+          ],
+          starter: `/* ⚡ Битва с боссом: Владыка Адаптива */
+/* Стилизуй карточку .profile-card под мобильные и десктопные устройства */
+
+.profile-card {
+  /* Задай фон, отступы, скругление и сетку flex/grid */
+}
+
+.profile-btn {
+  /* Задай стили кнопки с :hover и transition */
+}
+
+/* Добавь медиа-запрос для мобильных устройств */
+`,
+          solution: `.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px;
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #334155;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.4);
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid #38bdf8;
+}
+
+.profile-btn {
+  display: inline-flex;
+  padding: 10px 24px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease, filter 0.2s ease;
+}
+
+.profile-btn:hover {
+  background: #0284c7;
+  filter: brightness(1.1);
+}
+
+@media (max-width: 600px) {
+  .profile-card {
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+  }
+  .profile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}`,
+        },
+      ],
+    },
   ],
 }

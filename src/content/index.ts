@@ -7,6 +7,7 @@ import { m3Algorithms } from './modules/m3-algorithms'
 import { m4TypeScript } from './modules/m4-typescript'
 import { m5Async } from './modules/m5-async'
 import { m6Frontend } from './modules/m6-frontend'
+import { m6bVue } from './modules/m6b-vue'
 import { m7Backend } from './modules/m7-backend'
 import { m8Databases } from './modules/m8-databases'
 import { m9Interview } from './modules/m9-interview'
@@ -28,6 +29,7 @@ export const course: Course = {
     m4TypeScript,
     m5Async,
     m6Frontend,
+    m6bVue,
     m7Backend,
     m8Databases,
     restApi,
